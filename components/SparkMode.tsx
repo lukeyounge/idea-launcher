@@ -11,8 +11,6 @@ interface SparkModeProps {
 }
 
 export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsChange, onProceed }) => {
-  const [activeTab, setActiveTab] = useState<'build' | 'fix'>('build');
-
   const toggleSelection = (item: string) => {
     if (selections.includes(item)) {
       onSelectionsChange(selections.filter(s => s !== item));

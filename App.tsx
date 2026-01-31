@@ -179,6 +179,14 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
   };
 
   return (
+    <>
+      {view === 'spark' ? (
+        <SparkMode
+          selections={state.sparkSelections}
+          onSelectionsChange={(selections) => setState(prev => ({ ...prev, sparkSelections: selections }))}
+          onProceed={() => setView('workspace')}
+        />
+      ) : (
     <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24 relative overflow-visible">
       
       {/* Visual background glows */}
@@ -264,20 +272,7 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
       </AnimatePresence>
 
       <AnimatePresence mode="wait">
-        {view === 'spark' ? (
-          <motion.div
-            key="spark"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <SparkMode
-              selections={state.sparkSelections}
-              onSelectionsChange={(selections) => setState(prev => ({ ...prev, sparkSelections: selections }))}
-              onProceed={() => setView('workspace')}
-            />
-          </motion.div>
-        ) : view === 'workspace' ? (
+        {view === 'workspace' ? (
           <>
             {state.sparkSelections.length > 0 && (
               <motion.div
@@ -560,7 +555,9 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
       
       {/* Footer spacer */}
       <div className="h-40" />
-    </div>
+      </div>
+      )}
+    </>
   );
 };
 
