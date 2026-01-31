@@ -106,11 +106,11 @@ export const FloatingBubble: React.FC<FloatingBubbleProps> = ({
       <div
         className={`
           absolute inset-0 rounded-full backdrop-blur-md border
-          ${isHovering ? 'border-white/60' : 'border-white/30'}
+          ${isHovering ? 'border-white/60' : 'border-white/40'}
           transition-all duration-300 flex items-center justify-center
         `}
         style={{
-          background: `radial-gradient(135deg, ${glowColor}40 0%, ${glowColor}10 100%)`,
+          background: `radial-gradient(135deg, ${glowColor}60 0%, ${glowColor}20 50%, ${glowColor}05 100%)`,
           boxShadow: `inset 0 1px 20px ${glowColor}80, 0 0 ${isHovering ? 30 : 20}px ${glowColor}40`,
         }}
       >
@@ -125,16 +125,27 @@ export const FloatingBubble: React.FC<FloatingBubbleProps> = ({
           }}
         />
 
-        {/* Text - only visible on hover/selection */}
+        {/* Text - visible on hover, fully visible when selected */}
         <motion.div
           initial={{ opacity: 0 }}
-          animate={{ opacity: isHovering ? 1 : 0.3 }}
+          animate={{ opacity: isHovering ? 1 : 0.4 }}
           className="absolute inset-0 flex items-center justify-center px-4 text-center"
         >
-          <p className="text-white text-xs font-semibold leading-tight drop-shadow-lg">
+          <p className="text-white text-sm font-bold leading-tight drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]">
             {text}
           </p>
         </motion.div>
+
+        {/* Selected checkmark indicator */}
+        {isSelected && (
+          <motion.div
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            className="absolute top-2 right-2 w-6 h-6 rounded-full bg-white flex items-center justify-center"
+          >
+            <span className="text-slate-900 font-bold text-sm">✓</span>
+          </motion.div>
+        )}
 
         {/* Pulse ring animation */}
         {!isSelected && (

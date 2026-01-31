@@ -22,4 +22,5 @@ export interface AppState {
   instructions: Instruction[];
   hasLaunched: boolean;
   sparkSelections: string[];
+  synthesisConceptTitle?: string;
 }

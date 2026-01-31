@@ -6,6 +6,8 @@ import { STAGE_CONFIG, DEFAULT_INSTRUCTIONS } from './constants';
 import { StageBox } from './components/StageBox';
 import { InstructionChip } from './components/InstructionChip';
 import { SparkMode } from './components/SparkMode';
+import { AISynthesis } from './components/AISynthesis';
+import { RocketShip } from './components/RocketShip';
 import { 
   Rocket, 
   Lock, 
@@ -58,7 +60,7 @@ const App: React.FC = () => {
     };
   });
 
-  const [view, setView] = useState<'spark' | 'workspace' | 'approval' | 'final_review'>('spark');
+  const [view, setView] = useState<'spark' | 'synthesis' | 'workspace' | 'approval' | 'final_review'>('spark');
   const [activeStageId, setActiveStageId] = useState<StageId | null>(null);
   const [showCopySuccess, setShowCopySuccess] = useState(false);
   const [isPromptApproved, setIsPromptApproved] = useState(false);
@@ -184,7 +186,25 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
         <SparkMode
           selections={state.sparkSelections}
           onSelectionsChange={(selections) => setState(prev => ({ ...prev, sparkSelections: selections }))}
-          onProceed={() => setView('workspace')}
+          onProceed={() => setView('synthesis')}
+        />
+      ) : view === 'synthesis' ? (
+        <AISynthesis
+          selections={state.sparkSelections}
+          onSelect={(concept) => {
+            setState(prev => ({
+              ...prev,
+              synthesisConceptTitle: concept.title,
+              stages: {
+                ...prev.stages,
+                problem: { ...prev.stages.problem, text: concept.problemAngle },
+                people: { ...prev.stages.people, text: concept.targetAudience },
+                solution: { ...prev.stages.solution, text: concept.coreFunction },
+              }
+            }));
+            setView('workspace');
+          }}
+          onBack={() => setView('spark')}
         />
       ) : (
     <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24 relative overflow-visible">
@@ -309,44 +329,13 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
                 )}
               </AnimatePresence>
 
-              <div className="relative w-80 h-80 md:w-[500px] md:h-[500px] z-10">
-                <svg viewBox="0 0 100 100" className="w-full h-full -rotate-90 filter drop-shadow-[0_20px_50px_rgba(225,29,72,0.15)]">
-                  <circle cx="50" cy="50" r="48" fill="white" className="transition-all duration-700" />
-                  <path d="M 50 50 L 50 4 L 96 50 A 46 46 0 0 1 50 50" fill={state.stages.problem.locked ? '#be123c' : '#fff1f2'} className="transition-all duration-700" />
-                  <path d="M 50 50 L 96 50 L 50 96 A 46 46 0 0 1 50 50" fill={state.stages.people.locked ? '#e11d48' : '#ffe4e6'} className="transition-all duration-700" />
-                  <path d="M 50 50 L 50 96 L 4 50 A 46 46 0 0 1 50 50" fill={state.stages.solution.locked ? '#fb7185' : '#fff5f5'} className="transition-all duration-700" />
-                  <circle cx="50" cy="50" r="18" fill="white" className="shadow-inner" />
-                </svg>
-                
-                <div className="absolute inset-0 flex flex-col items-center justify-center">
-                  <AnimatePresence>
-                    {allStagesLocked ? (
-                      <motion.button
-                        initial={{ scale: 0, rotate: 270 }}
-                        animate={{ scale: 1, rotate: 0 }}
-                        whileHover={{ scale: 1.15, boxShadow: '0 0 60px rgba(225,29,72,0.4)' }}
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setView('approval')}
-                        className="bg-slate-900 text-white w-32 h-32 md:w-44 md:h-44 rounded-full flex flex-col items-center justify-center shadow-[0_30px_60px_-10px_rgba(0,0,0,0.4)] z-20 group border-[12px] border-white transition-all overflow-hidden"
-                      >
-                         <motion.div
-                           animate={{ y: [0, -4, 0] }}
-                           transition={{ repeat: Infinity, duration: 2 }}
-                         >
-                           <ZapIcon size={48} className="text-rose-500" strokeWidth={3} fill="currentColor" />
-                         </motion.div>
-                        <span className="text-[11px] font-black mt-3 uppercase tracking-[0.3em] text-white">Synthesize</span>
-                      </motion.button>
-                    ) : (
-                      <div className="bg-slate-50/80 backdrop-blur-md w-28 h-28 rounded-full flex flex-col items-center justify-center border-4 border-white shadow-inner text-slate-300">
-                        <motion.div animate={{ opacity: [0.3, 0.6, 0.3] }} transition={{ repeat: Infinity, duration: 2 }}>
-                          <Lock size={32} strokeWidth={2.5} />
-                        </motion.div>
-                        <span className="text-[9px] font-black mt-3 uppercase tracking-widest text-center px-6 leading-tight">Secure All Inputs</span>
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
+              <div className="relative w-full h-[600px] z-10 flex items-center justify-center">
+                <RocketShip
+                  problemLocked={state.stages.problem.locked}
+                  peopleLocked={state.stages.people.locked}
+                  solutionLocked={state.stages.solution.locked}
+                  onLaunch={() => setView('approval')}
+                />
               </div>
             </div>
 
