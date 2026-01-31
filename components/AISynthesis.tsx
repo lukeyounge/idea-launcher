@@ -6,6 +6,9 @@ interface Concept {
   id: string;
   title: string;
   oneLiner: string;
+  problemAngle: string;
+  targetAudience: string;
+  coreFunction: string;
 }
 
 interface AISynthesisProps {
@@ -14,22 +17,31 @@ interface AISynthesisProps {
   onBack: () => void;
 }
 
-// Mock seed concepts - simple one-liners based on problem patterns
+// Mock seed concepts - three distinct directions for the group to discuss and choose
 const MOCK_CONCEPTS: Concept[] = [
   {
     id: 'concept-1',
-    title: 'DecideNow',
-    oneLiner: 'A "just decide for me" app that picks for you when you\'re stuck',
+    title: 'The Honest Mirror',
+    oneLiner: 'Shows your group exactly where you\'re getting stuck, without judgment.',
+    problemAngle: 'Getting clear on the real obstacles preventing progress',
+    targetAudience: 'Students who need to see their patterns clearly to fix them',
+    coreFunction: 'Track and reflect on where time actually goes, where attention breaks, where promises get broken',
   },
   {
     id: 'concept-2',
-    title: 'StreakMate',
-    oneLiner: 'A streak-based group accountability partner that makes consistency feel like a game',
+    title: 'The Nudge',
+    oneLiner: 'A quiet assistant that checks in at the right moment to keep momentum alive.',
+    problemAngle: 'Losing steam halfway through, then forgetting to restart',
+    targetAudience: 'Groups that need gentle reminders, not nagging notifications',
+    coreFunction: 'Send perfectly-timed check-ins that reconnect the group to what matters',
   },
   {
     id: 'concept-3',
-    title: 'FocusFlow',
-    oneLiner: 'A study buddy that holds your group accountable with gentle check-ins',
+    title: 'The Bet',
+    oneLiner: 'Make it real by putting something on the line together - commitment through stakes.',
+    problemAngle: 'Promises that sound good but disappear by next week',
+    targetAudience: 'Groups that thrive when stakes are clear and visible',
+    coreFunction: 'Create group commitments where everyone can see who followed through',
   },
 ];
 

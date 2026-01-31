@@ -46,15 +46,15 @@ export const RocketShip: React.FC<RocketShipProps> = ({
         <motion.g>
           <motion.defs>
             <linearGradient id="noseConeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#fb7185" />
-              <stop offset="100%" stopColor="#f43f5e" />
+              <stop offset="0%" stopColor="#ff4081" />
+              <stop offset="100%" stopColor="#e91e63" />
             </linearGradient>
           </motion.defs>
           <motion.polygon
             points="100,20 130,80 70,80"
             fill={solutionLocked ? 'url(#noseConeGradient)' : '#cbd5e1'}
-            stroke={solutionLocked ? '#fb7185' : '#cbd5e1'}
-            strokeWidth="1.5"
+            stroke={solutionLocked ? '#ff4081' : '#cbd5e1'}
+            strokeWidth={solutionLocked ? '2.5' : '1.5'}
             initial={{ opacity: 0.3, scale: 0.8 }}
             animate={{
               opacity: solutionLocked ? 1 : 0.3,
@@ -67,14 +67,15 @@ export const RocketShip: React.FC<RocketShipProps> = ({
             <motion.polygon
               points="100,20 130,80 70,80"
               fill="none"
-              stroke="#fb7185"
-              strokeWidth="2.5"
-              opacity="0.4"
+              stroke="#ff4081"
+              strokeWidth="4"
+              opacity="0.6"
               animate={{
-                opacity: [0.4, 0.15, 0.4],
+                opacity: [0.6, 0.3, 0.6],
+                strokeWidth: ['4', '6', '4'],
               }}
               transition={{
-                duration: 2,
+                duration: 1.5,
                 repeat: Infinity,
               }}
             />
@@ -97,8 +98,8 @@ export const RocketShip: React.FC<RocketShipProps> = ({
         <motion.g>
           <motion.defs>
             <linearGradient id="cabinGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#fda4af" />
-              <stop offset="100%" stopColor="#fb7185" />
+              <stop offset="0%" stopColor="#ff6b9d" />
+              <stop offset="100%" stopColor="#ff1493" />
             </linearGradient>
           </motion.defs>
           <motion.rect
@@ -107,8 +108,8 @@ export const RocketShip: React.FC<RocketShipProps> = ({
             width="80"
             height="120"
             fill={peopleLocked ? 'url(#cabinGradient)' : '#cbd5e1'}
-            stroke={peopleLocked ? '#fb7185' : '#cbd5e1'}
-            strokeWidth="1.5"
+            stroke={peopleLocked ? '#ff1493' : '#cbd5e1'}
+            strokeWidth={peopleLocked ? '2.5' : '1.5'}
             rx="12"
             initial={{ opacity: 0.3, scaleY: 0.8 }}
             animate={{
@@ -126,15 +127,16 @@ export const RocketShip: React.FC<RocketShipProps> = ({
               width="80"
               height="120"
               fill="none"
-              stroke="#fb7185"
-              strokeWidth="2.5"
+              stroke="#ff1493"
+              strokeWidth="4"
               rx="12"
-              opacity="0.4"
+              opacity="0.6"
               animate={{
-                opacity: [0.4, 0.15, 0.4],
+                opacity: [0.6, 0.3, 0.6],
+                strokeWidth: ['4', '6', '4'],
               }}
               transition={{
-                duration: 2,
+                duration: 1.5,
                 repeat: Infinity,
                 delay: 0.3,
               }}
@@ -163,8 +165,8 @@ export const RocketShip: React.FC<RocketShipProps> = ({
         <motion.g>
           <motion.defs>
             <linearGradient id="engineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#fca5a5" />
-              <stop offset="100%" stopColor="#fb7185" />
+              <stop offset="0%" stopColor="#ff6b9d" />
+              <stop offset="100%" stopColor="#ff1493" />
             </linearGradient>
           </motion.defs>
           <motion.rect
@@ -173,8 +175,8 @@ export const RocketShip: React.FC<RocketShipProps> = ({
             width="60"
             height="100"
             fill={problemLocked ? 'url(#engineGradient)' : '#cbd5e1'}
-            stroke={problemLocked ? '#fb7185' : '#cbd5e1'}
-            strokeWidth="1.5"
+            stroke={problemLocked ? '#ff1493' : '#cbd5e1'}
+            strokeWidth={problemLocked ? '2.5' : '1.5'}
             rx="10"
             initial={{ opacity: 0.3, scaleY: 0.8 }}
             animate={{
@@ -192,15 +194,16 @@ export const RocketShip: React.FC<RocketShipProps> = ({
               width="60"
               height="100"
               fill="none"
-              stroke="#fb7185"
-              strokeWidth="2.5"
+              stroke="#ff1493"
+              strokeWidth="4"
               rx="10"
-              opacity="0.4"
+              opacity="0.6"
               animate={{
-                opacity: [0.4, 0.15, 0.4],
+                opacity: [0.6, 0.3, 0.6],
+                strokeWidth: ['4', '6', '4'],
               }}
               transition={{
-                duration: 2,
+                duration: 1.5,
                 repeat: Infinity,
                 delay: 0.6,
               }}
@@ -223,25 +226,25 @@ export const RocketShip: React.FC<RocketShipProps> = ({
         {/* Fins */}
         <motion.polygon
           points="50,280 40,350 70,320"
-          fill={problemLocked ? '#fca5a5' : '#cbd5e1'}
-          stroke={problemLocked ? '#fb7185' : '#cbd5e1'}
-          strokeWidth="1.5"
+          fill={problemLocked ? '#ff6b9d' : '#cbd5e1'}
+          stroke={problemLocked ? '#ff1493' : '#cbd5e1'}
+          strokeWidth={problemLocked ? '2' : '1.5'}
           initial={{ opacity: 0.3 }}
           animate={{ opacity: problemLocked ? 1 : 0.3 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         />
         <motion.polygon
           points="150,280 160,350 130,320"
-          fill={problemLocked ? '#fca5a5' : '#cbd5e1'}
-          stroke={problemLocked ? '#fb7185' : '#cbd5e1'}
-          strokeWidth="1.5"
+          fill={problemLocked ? '#ff6b9d' : '#cbd5e1'}
+          stroke={problemLocked ? '#ff1493' : '#cbd5e1'}
+          strokeWidth={problemLocked ? '2' : '1.5'}
           initial={{ opacity: 0.3 }}
           animate={{ opacity: problemLocked ? 1 : 0.3 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         />
 
         {/* Exhaust nozzle */}
-        <rect x="85" y="300" width="30" height="40" fill={problemLocked ? '#fb7185' : '#cbd5e1'} stroke={problemLocked ? '#f43f5e' : '#cbd5e1'} strokeWidth="1" rx="4" opacity={problemLocked ? 0.8 : 0.3} />
+        <rect x="85" y="300" width="30" height="40" fill={problemLocked ? '#ff1493' : '#cbd5e1'} stroke={problemLocked ? '#ff1493' : '#cbd5e1'} strokeWidth={problemLocked ? '2' : '1'} rx="4" opacity={problemLocked ? 1 : 0.3} />
       </motion.svg>
 
       {/* Flame animation - only when problem is locked */}
