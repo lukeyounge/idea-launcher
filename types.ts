@@ -21,4 +21,5 @@ export interface AppState {
   stages: Record<StageId, StageData>;
   instructions: Instruction[];
   hasLaunched: boolean;
+  sparkSelections: string[];
 }

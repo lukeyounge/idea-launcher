@@ -5,6 +5,7 @@ import { StageId, AppState, Instruction } from './types';
 import { STAGE_CONFIG, DEFAULT_INSTRUCTIONS } from './constants';
 import { StageBox } from './components/StageBox';
 import { InstructionChip } from './components/InstructionChip';
+import { SparkMode } from './components/SparkMode';
 import { 
   Rocket, 
   Lock, 
@@ -52,11 +53,12 @@ const App: React.FC = () => {
         id: `default-${idx}`,
         isApproved: false
       })),
-      hasLaunched: false
+      hasLaunched: false,
+      sparkSelections: []
     };
   });
 
-  const [view, setView] = useState<'workspace' | 'approval' | 'final_review'>('workspace');
+  const [view, setView] = useState<'spark' | 'workspace' | 'approval' | 'final_review'>('spark');
   const [activeStageId, setActiveStageId] = useState<StageId | null>(null);
   const [showCopySuccess, setShowCopySuccess] = useState(false);
   const [isPromptApproved, setIsPromptApproved] = useState(false);
@@ -262,15 +264,45 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
       </AnimatePresence>
 
       <AnimatePresence mode="wait">
-        {view === 'workspace' ? (
-          <motion.div 
-            key="workspace"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-center"
+        {view === 'spark' ? (
+          <motion.div
+            key="spark"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            <div className="lg:col-span-5 flex justify-center order-2 lg:order-1 relative">
+            <SparkMode
+              selections={state.sparkSelections}
+              onSelectionsChange={(selections) => setState(prev => ({ ...prev, sparkSelections: selections }))}
+              onProceed={() => setView('workspace')}
+            />
+          </motion.div>
+        ) : view === 'workspace' ? (
+          <>
+            {state.sparkSelections.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8 w-full glass-card bg-white/50 backdrop-blur-sm border border-rose-100/50 px-6 py-4 rounded-2xl"
+              >
+                <p className="text-sm font-semibold text-slate-700 mb-2">✨ You were drawn to:</p>
+                <p className="text-slate-600 text-sm flex flex-wrap gap-2">
+                  {state.sparkSelections.map((item, i) => (
+                    <span key={item}>
+                      {item}{i < state.sparkSelections.length - 1 && ','}
+                    </span>
+                  ))}
+                </p>
+              </motion.div>
+            )}
+            <motion.div
+              key="workspace"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="grid grid-cols-1 lg:grid-cols-12 gap-24 items-center"
+            >
+              <div className="lg:col-span-5 flex justify-center order-2 lg:order-1 relative">
               {/* Backglow for the circle */}
               <AnimatePresence>
                 {allStagesLocked && (
@@ -328,7 +360,8 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
               <StageBox data={state.stages.people} isActive={activeStageId === 'people'} onActivate={() => setActiveStageId('people')} onUpdate={(val) => updateStageText('people', val)} onReadyToLock={() => lockStage('people')} />
               <StageBox data={state.stages.solution} isActive={activeStageId === 'solution'} onActivate={() => setActiveStageId('solution')} onUpdate={(val) => updateStageText('solution', val)} onReadyToLock={() => lockStage('solution')} />
             </div>
-          </motion.div>
+            </motion.div>
+            </>
         ) : view === 'approval' ? (
           <motion.div 
             key="approval"
