@@ -197,17 +197,22 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
               <Clock size={14} strokeWidth={2.5} className="text-rose-500" /> Start Session
             </motion.button>
           ) : (
-            <motion.div 
+            <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="flex items-center gap-4 bg-slate-900/90 backdrop-blur-xl border border-white/20 px-8 py-3 rounded-full shadow-2xl"
+              className="fixed left-8 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-3"
             >
-              <div className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shadow-[0_0_10px_#f43f5e]" />
-              <span className="text-white font-black font-mono text-sm tracking-widest">
-                {Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}
-              </span>
-              <button onClick={() => setIsTimerActive(false)} className="text-white/40 hover:text-rose-400 transition-colors">
-                <Settings2 size={14} />
+              <div className="flex flex-col items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 px-5 py-4 rounded-full shadow-lg hover:bg-white/15 transition-colors">
+                <span className="text-white font-black font-mono text-2xl tracking-widest">
+                  {Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}
+                </span>
+              </div>
+              <button
+                onClick={() => setIsTimerActive(false)}
+                className="text-white/40 hover:text-rose-400 transition-colors p-2 hover:bg-white/10 rounded-full"
+                title="Stop timer"
+              >
+                <Settings2 size={16} />
               </button>
             </motion.div>
           )}
@@ -244,18 +249,14 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
       <AnimatePresence>
         {nudge && (
           <motion.div
-            initial={{ opacity: 0, x: -100, scale: 0.9 }}
-            animate={{ opacity: 1, x: 0, scale: 1 }}
-            exit={{ opacity: 0, x: -50, scale: 0.9 }}
-            className="fixed bottom-12 left-12 z-[150] bg-slate-900 text-white px-10 py-6 rounded-[2.5rem] shadow-[0_40px_80px_rgba(0,0,0,0.3)] flex items-center gap-6 border-l-8 border-rose-600 backdrop-blur-md"
+            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[150] bg-slate-900/40 backdrop-blur-xl border border-white/20 text-white px-6 py-4 rounded-full shadow-lg flex items-center gap-3 max-w-sm"
           >
-            <div className="bg-rose-600/20 p-4 rounded-2xl">
-              <Bell size={24} className="text-rose-500 animate-swing" strokeWidth={2.5} />
-            </div>
-            <div>
-              <p className="text-[10px] font-black uppercase tracking-[0.2em] text-rose-500 mb-1">Workshop Nudge</p>
-              <p className="text-lg font-extrabold tracking-tight">{nudge}</p>
-            </div>
+            <Bell size={18} className="text-rose-400 flex-shrink-0 animate-pulse" strokeWidth={2} />
+            <p className="text-sm font-semibold tracking-tight">{nudge}</p>
           </motion.div>
         )}
       </AnimatePresence>
