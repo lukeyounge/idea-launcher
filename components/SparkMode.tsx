@@ -4,7 +4,7 @@ import { SPARK_BUILD_OPTIONS, SPARK_PROBLEM_OPTIONS } from '@/constants';
 import { FloatingBubble } from './FloatingBubble';
 import { ParticleField } from './ParticleField';
 import { Constellation } from './Constellation';
-import { Sparkles, ArrowRight, SkipForward } from 'lucide-react';
+import { Sparkles, ArrowRight, SkipForward, RotateCcw } from 'lucide-react';
 
 interface SparkModeProps {
   selections: string[];
@@ -84,13 +84,23 @@ export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsCh
               <p className="text-slate-400 text-sm mt-1">What resonates with your group?</p>
             </div>
           </div>
-          <motion.button
-            onClick={onProceed}
-            whileHover={{ scale: 1.05 }}
-            className="pointer-events-auto flex items-center gap-2 text-slate-300 hover:text-rose-300 transition-colors text-xs font-semibold uppercase tracking-[0.1em] px-4 py-2 rounded-full border border-slate-700 hover:border-rose-500/50"
-          >
-            Skip <SkipForward size={14} />
-          </motion.button>
+          <div className="flex items-center gap-3 pointer-events-auto">
+            <motion.button
+              onClick={() => onSelectionsChange([])}
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 text-slate-400 hover:text-slate-200 transition-colors text-xs font-semibold uppercase tracking-[0.1em] px-4 py-2 rounded-full border border-slate-700 hover:border-slate-500/50"
+              title="Reset all selections"
+            >
+              <RotateCcw size={14} /> Reset
+            </motion.button>
+            <motion.button
+              onClick={onProceed}
+              whileHover={{ scale: 1.05 }}
+              className="flex items-center gap-2 text-slate-300 hover:text-rose-300 transition-colors text-xs font-semibold uppercase tracking-[0.1em] px-4 py-2 rounded-full border border-slate-700 hover:border-rose-500/50"
+            >
+              Skip <SkipForward size={14} />
+            </motion.button>
+          </div>
         </div>
       </motion.div>
 

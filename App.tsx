@@ -152,6 +152,30 @@ const App: React.FC = () => {
   const approvedCount = state.instructions.filter(i => i.isApproved).length;
   const canProgressToReview = approvedCount >= 5;
 
+  const handleReset = () => {
+    setState({
+      stages: {
+        problem: { ...STAGE_CONFIG.problem, label: 'The Struggle', text: '', locked: false },
+        people: { ...STAGE_CONFIG.people, label: 'The Crowd', text: '', locked: false },
+        solution: { ...STAGE_CONFIG.solution, label: 'The Big Idea', text: '', locked: false }
+      },
+      instructions: DEFAULT_INSTRUCTIONS.map((instr, idx) => ({
+        ...instr,
+        id: `default-${idx}`,
+        isApproved: false
+      })),
+      hasLaunched: false,
+      sparkSelections: []
+    });
+    setView('spark');
+    setActiveStageId(null);
+    setIsTimerActive(false);
+    setTimerSeconds(0);
+    setNudge(null);
+    setIsPromptApproved(false);
+    setCustomInput({ design: '', functionality: '', users: '' });
+  };
+
   const generatePromptText = () => {
     const approved = state.instructions.filter(i => i.isApproved);
     const design = approved.filter(i => i.category === 'design').map(i => `- ${i.text}`).join('\n');
@@ -266,9 +290,10 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
         </div>
         
         <div className="flex flex-wrap items-center justify-center gap-4">
-          <button 
-            onClick={() => { localStorage.clear(); window.location.reload(); }} 
+          <button
+            onClick={handleReset}
             className="group text-slate-400 hover:text-rose-500 transition-all font-black text-[10px] uppercase tracking-[0.25em] flex items-center gap-3 px-6 py-4 border border-slate-100 rounded-2xl hover:bg-rose-50/30 hover:border-rose-100"
+            title="Clear all progress and start over"
           >
             <RefreshCcw size={14} className="group-hover:rotate-180 transition-transform duration-500" /> Reset Space
           </button>
