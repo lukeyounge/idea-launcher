@@ -99,7 +99,7 @@ const App: React.FC = () => {
     }
 
     if (nudge) {
-      const timer = setTimeout(() => setNudge(null), 6000);
+      const timer = setTimeout(() => setNudge(null), 10000);
       return () => clearTimeout(timer);
     }
   }, [timerSeconds, isTimerActive]);
@@ -200,16 +200,16 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="fixed left-8 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-3"
+              className="fixed left-12 top-32 z-50 flex flex-col items-center gap-3"
             >
-              <div className="flex flex-col items-center gap-2 bg-white/10 backdrop-blur-xl border border-white/20 px-5 py-4 rounded-full shadow-lg hover:bg-white/15 transition-colors">
-                <span className="text-white font-black font-mono text-2xl tracking-widest">
+              <div className="flex flex-col items-center gap-2 bg-slate-900/80 backdrop-blur-xl border border-white/30 px-6 py-5 rounded-full shadow-xl hover:bg-slate-900/90 transition-colors">
+                <span className="text-white font-black font-mono text-3xl tracking-widest">
                   {Math.floor(timerSeconds / 60)}:{(timerSeconds % 60).toString().padStart(2, '0')}
                 </span>
               </div>
               <button
                 onClick={() => setIsTimerActive(false)}
-                className="text-white/40 hover:text-rose-400 transition-colors p-2 hover:bg-white/10 rounded-full"
+                className="text-white/50 hover:text-rose-400 transition-colors p-2 hover:bg-white/10 rounded-full"
                 title="Stop timer"
               >
                 <Settings2 size={16} />
@@ -249,11 +249,11 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
       <AnimatePresence>
         {nudge && (
           <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 10 }}
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: -10 }}
+            exit={{ opacity: 0, scale: 0.8, y: 20 }}
             transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[150] bg-slate-900/40 backdrop-blur-xl border border-white/20 text-white px-6 py-4 rounded-full shadow-lg flex items-center gap-3 max-w-sm"
+            className="fixed bottom-12 left-1/2 -translate-x-1/2 z-[150] bg-slate-700/70 backdrop-blur-xl border border-white/30 text-white px-8 py-4 rounded-full shadow-xl flex items-center gap-3 max-w-md"
           >
             <Bell size={18} className="text-rose-400 flex-shrink-0 animate-pulse" strokeWidth={2} />
             <p className="text-sm font-semibold tracking-tight">{nudge}</p>
