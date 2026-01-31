@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { SPARK_BUILD_OPTIONS, SPARK_PROBLEM_OPTIONS } from '@/constants';
-import { SparkBubble } from './SparkBubble';
+import { FloatingBubble } from './FloatingBubble';
+import { ParticleField } from './ParticleField';
+import { Constellation } from './Constellation';
 import { Sparkles, ArrowRight, SkipForward } from 'lucide-react';
 
 interface SparkModeProps {
@@ -10,140 +12,122 @@ interface SparkModeProps {
   onProceed: () => void;
 }
 
+const BUBBLE_COLORS = {
+  build: { glow: 'rgba(251, 113, 133, 1)', class: 'from-rose-400 to-pink-400' },
+  problem: { glow: 'rgba(59, 130, 246, 1)', class: 'from-blue-400 to-cyan-400' },
+};
+
 export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsChange, onProceed }) => {
-  const toggleSelection = (item: string) => {
-    if (selections.includes(item)) {
-      onSelectionsChange(selections.filter(s => s !== item));
+  const [bubblePositions, setBubblePositions] = useState<Record<string, { x: number; y: number }>>({});
+
+  // Combine all options with categories
+  const allBubbles = useMemo(() => {
+    return [
+      ...SPARK_BUILD_OPTIONS.map((text, i) => ({
+        id: `build-${i}`,
+        text,
+        category: 'build' as const,
+        size: 70 + Math.random() * 20,
+        x: Math.random() * (window.innerWidth - 100),
+        y: Math.random() * (window.innerHeight * 0.6),
+      })),
+      ...SPARK_PROBLEM_OPTIONS.map((text, i) => ({
+        id: `problem-${i}`,
+        text,
+        category: 'problem' as const,
+        size: 70 + Math.random() * 20,
+        x: Math.random() * (window.innerWidth - 100),
+        y: Math.random() * (window.innerHeight * 0.6),
+      })),
+    ];
+  }, []);
+
+  const toggleSelection = (text: string) => {
+    if (selections.includes(text)) {
+      onSelectionsChange(selections.filter(s => s !== text));
     } else {
-      onSelectionsChange([...selections, item]);
+      onSelectionsChange([...selections, text]);
     }
   };
 
   const canProceed = selections.length >= 3;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="min-h-screen bg-gradient-to-br from-white via-rose-50/30 to-white px-6 py-12"
-    >
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-16">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-3 mb-4"
-          >
-            <Sparkles size={32} className="text-rose-500" />
-            <h1 className="text-5xl md:text-6xl font-black text-slate-900">Spark Mode</h1>
-          </motion.div>
-          <p className="text-slate-500 text-lg max-w-xl">
-            Tap the ideas that resonate with you. This helps us understand what excites you.
-          </p>
-        </div>
+    <div className="relative w-screen h-screen overflow-hidden bg-slate-950">
+      {/* Particle field background */}
+      <ParticleField />
 
-        {/* Skip Button */}
-        <div className="flex justify-end mb-8">
-          <button
-            onClick={onProceed}
-            className="flex items-center gap-2 text-slate-400 hover:text-rose-500 transition-colors text-sm font-semibold uppercase tracking-[0.1em]"
-          >
-            I already know what I want <SkipForward size={16} />
-          </button>
-        </div>
+      {/* Background gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-slate-900 via-slate-900 to-slate-800 pointer-events-none" />
 
-        {/* Two Column Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-20">
-          {/* Build Track */}
-          <motion.div
-            initial={{ opacity: 0, x: -40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <h2 className="text-2xl font-bold text-slate-900 mb-8">Things I'd want to build</h2>
-            <div className="space-y-3 flex flex-wrap gap-3">
-              {SPARK_BUILD_OPTIONS.map((item) => (
-                <SparkBubble
-                  key={item}
-                  text={item}
-                  isSelected={selections.includes(item)}
-                  onToggle={() => toggleSelection(item)}
-                />
-              ))}
+      {/* Floating bubbles */}
+      <div className="absolute inset-0 pointer-events-none">
+        {allBubbles.map((bubble) => {
+          const colorConfig = bubble.category === 'build' ? BUBBLE_COLORS.build : BUBBLE_COLORS.problem;
+          return (
+            <div key={bubble.id} className="pointer-events-auto">
+              <FloatingBubble
+                id={bubble.id}
+                text={bubble.text}
+                colorClass={colorConfig.class}
+                glowColor={colorConfig.glow}
+                isSelected={selections.includes(bubble.text)}
+                onSelect={() => toggleSelection(bubble.text)}
+                position={{ x: bubble.x, y: bubble.y }}
+                size={bubble.size}
+              />
             </div>
-          </motion.div>
-
-          {/* Fix Track */}
-          <motion.div
-            initial={{ opacity: 0, x: 40 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
-          >
-            <h2 className="text-2xl font-bold text-slate-900 mb-8">Things that bug me</h2>
-            <div className="space-y-3 flex flex-wrap gap-3">
-              {SPARK_PROBLEM_OPTIONS.map((item) => (
-                <SparkBubble
-                  key={item}
-                  text={item}
-                  isSelected={selections.includes(item)}
-                  onToggle={() => toggleSelection(item)}
-                />
-              ))}
-            </div>
-          </motion.div>
-        </div>
-
-        {/* Selection Counter and Proceed Button */}
-        <div className="flex flex-col items-center gap-6 sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent pt-8 pb-4">
-          <motion.div
-            animate={{ scale: selections.length > 0 ? 1 : 0.95 }}
-            className="text-center"
-          >
-            <p className="text-slate-600 font-semibold mb-2">
-              {selections.length} spark{selections.length !== 1 ? 's' : ''} collected
-            </p>
-            <AnimatePresence>
-              {selections.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="text-sm text-slate-500 max-w-md"
-                >
-                  <p className="line-clamp-2">{selections.join(', ')}</p>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </motion.div>
-
-          <motion.button
-            initial={{ opacity: 0.5, scale: 0.95 }}
-            animate={{
-              opacity: canProceed ? 1 : 0.5,
-              scale: canProceed ? 1 : 0.95
-            }}
-            whileHover={canProceed ? { scale: 1.05 } : {}}
-            whileTap={canProceed ? { scale: 0.95 } : {}}
-            onClick={onProceed}
-            disabled={!canProceed}
-            className={`
-              flex items-center gap-3 px-8 py-4 rounded-full font-bold uppercase tracking-[0.1em] text-sm
-              transition-all
-              ${canProceed
-                ? 'bg-rose-500 text-white shadow-lg hover:shadow-xl cursor-pointer'
-                : 'bg-slate-200 text-slate-500 cursor-not-allowed'
-              }
-            `}
-          >
-            Ready to explore <ArrowRight size={18} />
-          </motion.button>
-
-          {!canProceed && (
-            <p className="text-slate-400 text-sm">Select at least 3 sparks to continue</p>
-          )}
-        </div>
+          );
+        })}
       </div>
-    </motion.div>
+
+      {/* Header overlay */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="absolute top-8 left-8 right-8 z-30 pointer-events-none"
+      >
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <Sparkles size={32} className="text-rose-400" />
+            <div>
+              <h1 className="text-4xl font-black text-white tracking-tight">Spark Mode</h1>
+              <p className="text-slate-400 text-sm mt-1">Catch the ideas that resonate with you</p>
+            </div>
+          </div>
+          <motion.button
+            onClick={onProceed}
+            whileHover={{ scale: 1.05 }}
+            className="pointer-events-auto flex items-center gap-2 text-slate-300 hover:text-rose-300 transition-colors text-xs font-semibold uppercase tracking-[0.1em] px-4 py-2 rounded-full border border-slate-700 hover:border-rose-500/50"
+          >
+            Skip <SkipForward size={14} />
+          </motion.button>
+        </div>
+      </motion.div>
+
+      {/* Constellation at bottom */}
+      <Constellation
+        selections={selections}
+        onRemove={(item) => toggleSelection(item)}
+      />
+
+      {/* Proceed button - floating */}
+      {canProceed && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="absolute bottom-48 right-8 z-40 pointer-events-auto"
+        >
+          <motion.button
+            onClick={onProceed}
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-3 px-8 py-4 rounded-full font-bold uppercase tracking-[0.15em] text-sm bg-gradient-to-r from-rose-500 to-rose-600 text-white shadow-[0_0_40px_rgba(251,113,133,0.4)] hover:shadow-[0_0_60px_rgba(251,113,133,0.6)] transition-all"
+          >
+            Ready to explore <ArrowRight size={20} />
+          </motion.button>
+        </motion.div>
+      )}
+    </div>
   );
 };
