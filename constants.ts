@@ -31,30 +31,30 @@ export const STAGE_CONFIG: Record<string, Omit<StageData, 'text' | 'locked'>> = 
   }
 };
 
-export const SPARK_BUILD_OPTIONS = [
-  'a countdown timer for anything',
-  'a random excuse generator',
-  'a mood tracker that actually looks good',
-  'a study buddy that keeps me honest',
-  'a decision maker for when I can\'t choose',
-  'a hype-up tool before big moments',
-  'a playlist generator based on my vibe',
-  'a habit streak tracker',
-  'a "what should I eat" picker',
-  'a daily challenge generator'
+// All spark bubbles are now problem-focused for groups
+export const SPARK_PROBLEM_OPTIONS = [
+  'losing focus when it matters most',
+  'drowning in too many choices',
+  'starting strong but fading halfway through',
+  'forgetting the things we actually care about',
+  'feeling scattered across too many apps',
+  'wanting accountability but hating being nagged',
+  'procrastinating on decisions until they make themselves',
+  'knowing what to do but not doing it',
+  'decision fatigue by lunchtime',
+  'too many tabs, too many thoughts',
+  'half-finished projects everywhere',
+  'motivation that disappears after day one',
+  'saying yes to everything, finishing nothing',
+  'feeling behind even when we\'re not',
+  'the guilt of an unused app library',
+  'getting lost in planning instead of doing',
+  'breaking promises we make to ourselves',
+  'analysis paralysis on small things'
 ];
 
-export const SPARK_PROBLEM_OPTIONS = [
-  'forgetting stuff I need to do',
-  'not being able to focus',
-  'feeling bored with nothing to do',
-  'making small decisions takes forever',
-  'losing motivation halfway through',
-  'explaining things to people who don\'t get it',
-  'not knowing what to say in awkward moments',
-  'never sticking to habits',
-  'feeling overwhelmed by too many options'
-];
+// Deprecated - now using only problems
+export const SPARK_BUILD_OPTIONS = SPARK_PROBLEM_OPTIONS;
 
 export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [
   { category: 'design', text: 'Make it mobile-friendly and responsive' },

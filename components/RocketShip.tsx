@@ -29,7 +29,10 @@ export const RocketShip: React.FC<RocketShipProps> = ({
       {/* Rocket SVG */}
       <motion.svg
         viewBox="0 0 200 500"
-        className="w-48 md:w-64 h-auto drop-shadow-2xl"
+        className="w-48 md:w-64 h-auto"
+        style={{
+          filter: 'drop-shadow(0 25px 50px rgba(251, 113, 133, 0.15))',
+        }}
         animate={{
           y: allLocked ? [0, -10, 0] : 0,
         }}
@@ -41,11 +44,17 @@ export const RocketShip: React.FC<RocketShipProps> = ({
       >
         {/* Nose Cone (Solution - Top) */}
         <motion.g>
+          <motion.defs>
+            <linearGradient id="noseConeGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#fb7185" />
+              <stop offset="100%" stopColor="#f43f5e" />
+            </linearGradient>
+          </motion.defs>
           <motion.polygon
             points="100,20 130,80 70,80"
-            fill={solutionLocked ? '#f43f5e' : '#334155'}
-            stroke={solutionLocked ? '#fb7185' : '#64748b'}
-            strokeWidth="2"
+            fill={solutionLocked ? 'url(#noseConeGradient)' : '#cbd5e1'}
+            stroke={solutionLocked ? '#fb7185' : '#cbd5e1'}
+            strokeWidth="1.5"
             initial={{ opacity: 0.3, scale: 0.8 }}
             animate={{
               opacity: solutionLocked ? 1 : 0.3,
@@ -59,10 +68,10 @@ export const RocketShip: React.FC<RocketShipProps> = ({
               points="100,20 130,80 70,80"
               fill="none"
               stroke="#fb7185"
-              strokeWidth="3"
-              opacity="0.5"
+              strokeWidth="2.5"
+              opacity="0.4"
               animate={{
-                opacity: [0.5, 0.2, 0.5],
+                opacity: [0.4, 0.15, 0.4],
               }}
               transition={{
                 duration: 2,
@@ -76,25 +85,31 @@ export const RocketShip: React.FC<RocketShipProps> = ({
             y="55"
             textAnchor="middle"
             fill={solutionLocked ? '#fff' : '#94a3b8'}
-            fontSize="12"
+            fontSize="11"
             fontWeight="bold"
             fontFamily="system-ui"
           >
-            {solutionLocked ? 'S3' : '???'}
+            {solutionLocked ? 'S' : '?'}
           </text>
         </motion.g>
 
         {/* Main Body - Crew Cabin (People - Middle) */}
         <motion.g>
+          <motion.defs>
+            <linearGradient id="cabinGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#fda4af" />
+              <stop offset="100%" stopColor="#fb7185" />
+            </linearGradient>
+          </motion.defs>
           <motion.rect
             x="60"
             y="80"
             width="80"
             height="120"
-            fill={peopleLocked ? '#3b82f6' : '#1e293b'}
-            stroke={peopleLocked ? '#60a5fa' : '#475569'}
-            strokeWidth="2"
-            rx="8"
+            fill={peopleLocked ? 'url(#cabinGradient)' : '#cbd5e1'}
+            stroke={peopleLocked ? '#fb7185' : '#cbd5e1'}
+            strokeWidth="1.5"
+            rx="12"
             initial={{ opacity: 0.3, scaleY: 0.8 }}
             animate={{
               opacity: peopleLocked ? 1 : 0.3,
@@ -111,12 +126,12 @@ export const RocketShip: React.FC<RocketShipProps> = ({
               width="80"
               height="120"
               fill="none"
-              stroke="#60a5fa"
-              strokeWidth="3"
-              rx="8"
-              opacity="0.5"
+              stroke="#fb7185"
+              strokeWidth="2.5"
+              rx="12"
+              opacity="0.4"
               animate={{
-                opacity: [0.5, 0.2, 0.5],
+                opacity: [0.4, 0.15, 0.4],
               }}
               transition={{
                 duration: 2,
@@ -126,35 +141,41 @@ export const RocketShip: React.FC<RocketShipProps> = ({
             />
           )}
           {/* Windows */}
-          <circle cx="85" cy="110" r="6" fill={peopleLocked ? '#e0f2fe' : '#64748b'} opacity="0.6" />
-          <circle cx="115" cy="110" r="6" fill={peopleLocked ? '#e0f2fe' : '#64748b'} opacity="0.6" />
-          <circle cx="85" cy="160" r="6" fill={peopleLocked ? '#e0f2fe' : '#64748b'} opacity="0.6" />
-          <circle cx="115" cy="160" r="6" fill={peopleLocked ? '#e0f2fe' : '#64748b'} opacity="0.6" />
+          <circle cx="85" cy="110" r="5" fill={peopleLocked ? '#fff' : '#e2e8f0'} opacity={peopleLocked ? 0.8 : 0.4} />
+          <circle cx="115" cy="110" r="5" fill={peopleLocked ? '#fff' : '#e2e8f0'} opacity={peopleLocked ? 0.8 : 0.4} />
+          <circle cx="85" cy="160" r="5" fill={peopleLocked ? '#fff' : '#e2e8f0'} opacity={peopleLocked ? 0.8 : 0.4} />
+          <circle cx="115" cy="160" r="5" fill={peopleLocked ? '#fff' : '#e2e8f0'} opacity={peopleLocked ? 0.8 : 0.4} />
           {/* Label */}
           <text
             x="100"
             y="145"
             textAnchor="middle"
             fill={peopleLocked ? '#fff' : '#94a3b8'}
-            fontSize="14"
+            fontSize="13"
             fontWeight="bold"
             fontFamily="system-ui"
           >
-            {peopleLocked ? 'P2' : '???'}
+            {peopleLocked ? 'P' : '?'}
           </text>
         </motion.g>
 
         {/* Engine/Foundation (Problem - Bottom) */}
         <motion.g>
+          <motion.defs>
+            <linearGradient id="engineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#fca5a5" />
+              <stop offset="100%" stopColor="#fb7185" />
+            </linearGradient>
+          </motion.defs>
           <motion.rect
             x="70"
             y="200"
             width="60"
             height="100"
-            fill={problemLocked ? '#f97316' : '#1e293b'}
-            stroke={problemLocked ? '#fb923c' : '#475569'}
-            strokeWidth="2"
-            rx="6"
+            fill={problemLocked ? 'url(#engineGradient)' : '#cbd5e1'}
+            stroke={problemLocked ? '#fb7185' : '#cbd5e1'}
+            strokeWidth="1.5"
+            rx="10"
             initial={{ opacity: 0.3, scaleY: 0.8 }}
             animate={{
               opacity: problemLocked ? 1 : 0.3,
@@ -171,12 +192,12 @@ export const RocketShip: React.FC<RocketShipProps> = ({
               width="60"
               height="100"
               fill="none"
-              stroke="#fb923c"
-              strokeWidth="3"
-              rx="6"
-              opacity="0.5"
+              stroke="#fb7185"
+              strokeWidth="2.5"
+              rx="10"
+              opacity="0.4"
               animate={{
-                opacity: [0.5, 0.2, 0.5],
+                opacity: [0.4, 0.15, 0.4],
               }}
               transition={{
                 duration: 2,
@@ -191,36 +212,36 @@ export const RocketShip: React.FC<RocketShipProps> = ({
             y="255"
             textAnchor="middle"
             fill={problemLocked ? '#fff' : '#94a3b8'}
-            fontSize="14"
+            fontSize="13"
             fontWeight="bold"
             fontFamily="system-ui"
           >
-            {problemLocked ? 'P1' : '???'}
+            {problemLocked ? 'E' : '?'}
           </text>
         </motion.g>
 
         {/* Fins */}
         <motion.polygon
           points="50,280 40,350 70,320"
-          fill={problemLocked ? '#f97316' : '#1e293b'}
-          stroke={problemLocked ? '#fb923c' : '#475569'}
-          strokeWidth="2"
+          fill={problemLocked ? '#fca5a5' : '#cbd5e1'}
+          stroke={problemLocked ? '#fb7185' : '#cbd5e1'}
+          strokeWidth="1.5"
           initial={{ opacity: 0.3 }}
           animate={{ opacity: problemLocked ? 1 : 0.3 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         />
         <motion.polygon
           points="150,280 160,350 130,320"
-          fill={problemLocked ? '#f97316' : '#1e293b'}
-          stroke={problemLocked ? '#fb923c' : '#475569'}
-          strokeWidth="2"
+          fill={problemLocked ? '#fca5a5' : '#cbd5e1'}
+          stroke={problemLocked ? '#fb7185' : '#cbd5e1'}
+          strokeWidth="1.5"
           initial={{ opacity: 0.3 }}
           animate={{ opacity: problemLocked ? 1 : 0.3 }}
           transition={{ duration: 0.5, delay: 0.1 }}
         />
 
         {/* Exhaust nozzle */}
-        <rect x="85" y="300" width="30" height="40" fill="#475569" stroke="#64748b" strokeWidth="1" rx="4" />
+        <rect x="85" y="300" width="30" height="40" fill={problemLocked ? '#fb7185' : '#cbd5e1'} stroke={problemLocked ? '#f43f5e' : '#cbd5e1'} strokeWidth="1" rx="4" opacity={problemLocked ? 0.8 : 0.3} />
       </motion.svg>
 
       {/* Flame animation - only when problem is locked */}

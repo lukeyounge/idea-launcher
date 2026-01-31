@@ -260,7 +260,7 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
             </h1>
             <div className="flex items-center gap-4 mt-6 justify-center md:justify-start">
               <div className="h-[2px] w-12 bg-rose-500 rounded-full" />
-              <p className="text-slate-400 font-bold uppercase tracking-[0.4em] text-[11px]">Architecting The Future</p>
+              <p className="text-slate-400 font-bold uppercase tracking-[0.4em] text-[11px]">You've got the spark. Now make it specific enough to build.</p>
             </div>
           </motion.div>
         </div>
@@ -294,20 +294,36 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
       <AnimatePresence mode="wait">
         {view === 'workspace' ? (
           <>
-            {state.sparkSelections.length > 0 && (
+            {/* Persistent context banner */}
+            {(state.sparkSelections.length > 0 || state.synthesisConceptTitle) && (
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-8 w-full glass-card bg-white/50 backdrop-blur-sm border border-rose-100/50 px-6 py-4 rounded-2xl"
+                className="sticky top-0 z-40 mb-8 w-full glass-card bg-white/60 backdrop-blur-md border border-rose-100/60 px-8 py-5 rounded-2xl shadow-lg"
               >
-                <p className="text-sm font-semibold text-slate-700 mb-2">✨ You were drawn to:</p>
-                <p className="text-slate-600 text-sm flex flex-wrap gap-2">
-                  {state.sparkSelections.map((item, i) => (
-                    <span key={item}>
-                      {item}{i < state.sparkSelections.length - 1 && ','}
-                    </span>
-                  ))}
-                </p>
+                {state.synthesisConceptTitle && (
+                  <div className="mb-4 pb-4 border-b border-rose-100/50">
+                    <p className="text-xs font-black text-rose-600 uppercase tracking-[0.15em] mb-1">🚀 You're Building:</p>
+                    <p className="text-lg font-black text-slate-900">{state.synthesisConceptTitle}</p>
+                  </div>
+                )}
+                {state.sparkSelections.length > 0 && (
+                  <div>
+                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-[0.1em] mb-3">From your sparks:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {state.sparkSelections.slice(0, 5).map((item) => (
+                        <span key={item} className="text-xs bg-rose-100/70 text-rose-900 font-semibold px-3 py-1.5 rounded-full">
+                          {item}
+                        </span>
+                      ))}
+                      {state.sparkSelections.length > 5 && (
+                        <span className="text-xs text-slate-500 px-3 py-1.5 font-semibold">
+                          +{state.sparkSelections.length - 5} more
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                )}
               </motion.div>
             )}
             <motion.div

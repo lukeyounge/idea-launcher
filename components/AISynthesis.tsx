@@ -5,10 +5,7 @@ import { ArrowLeft, Sparkles } from 'lucide-react';
 interface Concept {
   id: string;
   title: string;
-  description: string;
-  problemAngle: string;
-  targetAudience: string;
-  coreFunction: string;
+  oneLiner: string;
 }
 
 interface AISynthesisProps {
@@ -17,43 +14,48 @@ interface AISynthesisProps {
   onBack: () => void;
 }
 
-// Mock concepts based on common patterns in selections
+// Mock seed concepts - simple one-liners based on problem patterns
 const MOCK_CONCEPTS: Concept[] = [
   {
     id: 'concept-1',
-    title: 'ChooseMate',
-    description: 'A "just pick for me" app that ends choice paralysis with confident suggestions',
-    problemAngle: 'Decision fatigue and analysis paralysis when faced with too many options',
-    targetAudience: 'Students and professionals who struggle with decision-making',
-    coreFunction: 'Give users one smart, curated option and remove the burden of choice',
+    title: 'DecideNow',
+    oneLiner: 'A "just decide for me" app that picks for you when you\'re stuck',
   },
   {
     id: 'concept-2',
-    title: 'StreakKeeper',
-    description: 'A streak-based accountability partner that makes consistency feel like a game',
-    problemAngle: 'Losing motivation halfway through and struggling to stick to habits',
-    targetAudience: 'Anyone trying to build lasting habits but lacking accountability',
-    coreFunction: 'Gamify habit tracking with visual streaks and gentle nudges',
+    title: 'StreakMate',
+    oneLiner: 'A streak-based group accountability partner that makes consistency feel like a game',
   },
   {
     id: 'concept-3',
     title: 'FocusFlow',
-    description: 'A study buddy that holds you accountable with gentle, honest check-ins',
-    problemAngle: 'Not being able to focus and feeling bored with nothing structured to do',
-    targetAudience: 'Students and learners seeking an accountability partner',
-    coreFunction: 'Create a judgment-free check-in system that keeps users on track',
+    oneLiner: 'A study buddy that holds your group accountable with gentle check-ins',
   },
 ];
 
 export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, onBack }) => {
-  const [selectedConcept, setSelectedConcept] = useState<string | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   const handleSelect = (concept: Concept) => {
-    setSelectedConcept(concept.id);
+    setSelectedId(concept.id);
     setTimeout(() => {
       onSelect(concept);
     }, 600);
   };
+
+  // Determine the theme from selections
+  const hasAccountability = selections.some(s => s.toLowerCase().includes('accountability') || s.toLowerCase().includes('motivation') || s.toLowerCase().includes('promise'));
+  const hasFocus = selections.some(s => s.toLowerCase().includes('focus') || s.toLowerCase().includes('scattered'));
+  const hasDecisions = selections.some(s => s.toLowerCase().includes('decis') || s.toLowerCase().includes('choice'));
+
+  let themeInsight = 'Your group is drawn to problems around focus, accountability, and making decisions';
+  if (hasDecisions && !hasFocus && !hasAccountability) {
+    themeInsight = 'Your group is wrestling with decision fatigue and analysis paralysis';
+  } else if (hasAccountability && !hasFocus) {
+    themeInsight = 'Your group cares about consistency and keeping promises to themselves';
+  } else if (hasFocus) {
+    themeInsight = 'Your group is fighting distraction and wanting to matter more';
+  }
 
   return (
     <motion.div
@@ -73,23 +75,32 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
             onClick={onBack}
             className="flex items-center gap-2 text-slate-300 hover:text-rose-300 transition-colors font-semibold uppercase text-xs tracking-[0.1em] px-4 py-2 rounded-full border border-slate-700 hover:border-rose-500/50"
           >
-            <ArrowLeft size={16} /> Back to Sparks
+            <ArrowLeft size={16} /> Back
           </button>
         </motion.div>
 
-        {/* Title and intro */}
+        {/* Title */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-center mb-16"
+          className="text-center mb-8"
         >
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <Sparkles size={32} className="text-rose-400" />
-            <h1 className="text-5xl font-black text-white tracking-tight">What Your Stars Say</h1>
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <Sparkles size={28} className="text-rose-400" />
+            <h1 className="text-4xl font-black text-white tracking-tight">What Your Stars Say</h1>
           </div>
-          <p className="text-slate-300 text-lg max-w-2xl mx-auto">
-            Based on your constellation of choices, here are three app concepts that match your creative direction.
+        </motion.div>
+
+        {/* Theme insight */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+          className="mb-12 p-6 rounded-2xl bg-gradient-to-r from-rose-500/10 to-rose-600/5 border border-rose-500/20 backdrop-blur-sm"
+        >
+          <p className="text-center text-rose-100 text-lg font-semibold">
+            {themeInsight}
           </p>
         </motion.div>
 
@@ -97,14 +108,14 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
+          transition={{ delay: 0.25 }}
           className="mb-12 p-6 rounded-2xl bg-slate-800/30 border border-slate-700/50 backdrop-blur-sm"
         >
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-[0.1em] mb-3">
-            ✨ Your Captured Sparks
+            🌟 Shared Concerns
           </p>
           <div className="flex flex-wrap gap-2">
-            {selections.slice(0, 5).map((spark) => (
+            {selections.slice(0, 6).map((spark) => (
               <span
                 key={spark}
                 className="text-sm text-slate-200 bg-slate-700/50 px-3 py-1 rounded-full border border-slate-600/50"
@@ -112,84 +123,75 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
                 {spark}
               </span>
             ))}
-            {selections.length > 5 && (
+            {selections.length > 6 && (
               <span className="text-sm text-slate-400 px-3 py-1">
-                + {selections.length - 5} more
+                + {selections.length - 6} more
               </span>
             )}
           </div>
         </motion.div>
 
-        {/* Concepts Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-          {MOCK_CONCEPTS.map((concept, index) => (
-            <motion.button
-              key={concept.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.3 + index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => handleSelect(concept)}
-              className={`
-                relative group text-left p-8 rounded-2xl border-2 transition-all duration-300
-                ${
-                  selectedConcept === concept.id
-                    ? 'bg-rose-500/20 border-rose-500 shadow-[0_0_40px_rgba(251,113,133,0.3)]'
-                    : 'bg-slate-800/20 border-slate-700 hover:border-rose-500/50 hover:bg-slate-800/40'
-                }
-              `}
-            >
-              {/* Selection indicator */}
-              {selectedConcept === concept.id && (
-                <motion.div
-                  layoutId="selectedConcept"
-                  className="absolute top-4 right-4 w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center text-white font-bold text-sm"
-                >
-                  ✓
-                </motion.div>
-              )}
-
-              <h3 className="text-2xl font-black text-white mb-2 group-hover:text-rose-300 transition-colors">
-                {concept.title}
-              </h3>
-
-              <p className="text-slate-300 text-sm mb-4 line-clamp-2">
-                {concept.description}
-              </p>
-
-              <div className="space-y-3 text-xs text-slate-400">
-                <div>
-                  <p className="font-semibold text-slate-300 mb-1">The Problem</p>
-                  <p>{concept.problemAngle}</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-slate-300 mb-1">For Whom</p>
-                  <p>{concept.targetAudience}</p>
-                </div>
-                <div>
-                  <p className="font-semibold text-slate-300 mb-1">Core Function</p>
-                  <p>{concept.coreFunction}</p>
-                </div>
-              </div>
-
-              {/* Hover indicator */}
-              <div className="mt-6 pt-4 border-t border-slate-700/50 text-xs font-semibold text-slate-400 group-hover:text-rose-300 transition-colors">
-                Click to select →
-              </div>
-            </motion.button>
-          ))}
-        </div>
-
-        {/* Custom option */}
+        {/* Seed concepts */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="mb-12"
         >
-          <p className="text-slate-400 text-sm mb-4">
-            None of these feel right? You can write your own idea when you get to the workspace.
+          <p className="text-sm font-semibold text-slate-300 uppercase tracking-[0.1em] mb-6 text-center">
+            Consider Building:
+          </p>
+          <div className="space-y-4">
+            {MOCK_CONCEPTS.map((concept, index) => (
+              <motion.button
+                key={concept.id}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + index * 0.1 }}
+                whileHover={{ scale: 1.02, x: 10 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleSelect(concept)}
+                className={`
+                  relative w-full group text-left p-6 rounded-xl border-2 transition-all duration-300
+                  ${
+                    selectedId === concept.id
+                      ? 'bg-rose-500/20 border-rose-500 shadow-[0_0_40px_rgba(251,113,133,0.3)]'
+                      : 'bg-slate-800/20 border-slate-700 hover:border-rose-500/50 hover:bg-slate-800/40'
+                  }
+                `}
+              >
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex-1">
+                    <h3 className="text-xl font-black text-white mb-2 group-hover:text-rose-300 transition-colors">
+                      {concept.title}
+                    </h3>
+                    <p className="text-slate-300 text-sm leading-relaxed">
+                      {concept.oneLiner}
+                    </p>
+                  </div>
+                  {selectedId === concept.id && (
+                    <motion.div
+                      layoutId="selectedConcept"
+                      className="w-6 h-6 rounded-full bg-rose-500 flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
+                    >
+                      ✓
+                    </motion.div>
+                  )}
+                </div>
+              </motion.button>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Custom option footer */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="text-center pt-8 border-t border-slate-800"
+        >
+          <p className="text-slate-400 text-sm">
+            These are sparks, not blueprints. Pick one or write your own in the workspace.
           </p>
         </motion.div>
       </div>

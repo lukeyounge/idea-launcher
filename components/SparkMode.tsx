@@ -13,33 +13,22 @@ interface SparkModeProps {
 }
 
 const BUBBLE_COLORS = {
-  build: { glow: 'rgba(251, 113, 133, 1)', class: 'from-rose-400 to-pink-400' },
-  problem: { glow: 'rgba(59, 130, 246, 1)', class: 'from-blue-400 to-cyan-400' },
+  problem: { glow: 'rgba(251, 113, 133, 1)', class: 'from-rose-400 to-pink-400' },
 };
 
 export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsChange, onProceed }) => {
   const [bubblePositions, setBubblePositions] = useState<Record<string, { x: number; y: number }>>({});
 
-  // Combine all options with categories
+  // All bubbles are now problem-focused for groups
   const allBubbles = useMemo(() => {
-    return [
-      ...SPARK_BUILD_OPTIONS.map((text, i) => ({
-        id: `build-${i}`,
-        text,
-        category: 'build' as const,
-        size: 70 + Math.random() * 20,
-        x: Math.random() * (window.innerWidth - 100),
-        y: Math.random() * (window.innerHeight * 0.6),
-      })),
-      ...SPARK_PROBLEM_OPTIONS.map((text, i) => ({
-        id: `problem-${i}`,
-        text,
-        category: 'problem' as const,
-        size: 70 + Math.random() * 20,
-        x: Math.random() * (window.innerWidth - 100),
-        y: Math.random() * (window.innerHeight * 0.6),
-      })),
-    ];
+    return SPARK_PROBLEM_OPTIONS.map((text, i) => ({
+      id: `problem-${i}`,
+      text,
+      category: 'problem' as const,
+      size: 70 + Math.random() * 20,
+      x: Math.random() * (window.innerWidth - 100),
+      y: Math.random() * (window.innerHeight * 0.6),
+    }));
   }, []);
 
   const toggleSelection = (text: string) => {
@@ -50,7 +39,7 @@ export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsCh
     }
   };
 
-  const canProceed = selections.length >= 3;
+  const canProceed = selections.length >= 8;
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950">
@@ -92,7 +81,7 @@ export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsCh
             <Sparkles size={32} className="text-rose-400" />
             <div>
               <h1 className="text-4xl font-black text-white tracking-tight">Spark Mode</h1>
-              <p className="text-slate-400 text-sm mt-1">Catch the ideas that resonate with you</p>
+              <p className="text-slate-400 text-sm mt-1">What resonates with your group?</p>
             </div>
           </div>
           <motion.button
