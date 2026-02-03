@@ -17,31 +17,30 @@ interface AISynthesisProps {
   onBack: () => void;
 }
 
-// Mock seed concepts - three distinct directions for the group to discuss and choose
 const MOCK_CONCEPTS: Concept[] = [
   {
     id: 'concept-1',
-    title: 'The Honest Mirror',
-    oneLiner: 'Shows your group exactly where you\'re getting stuck, without judgment.',
-    problemAngle: 'Getting clear on the real obstacles preventing progress',
-    targetAudience: 'Students who need to see their patterns clearly to fix them',
-    coreFunction: 'Track and reflect on where time actually goes, where attention breaks, where promises get broken',
+    title: 'Commitment Ring',
+    oneLiner: 'Make promises visible to your group - what you commit to, everyone sees.',
+    problemAngle: 'Breaking promises you make to yourself because no one else knows',
+    targetAudience: 'Students who need accountability through visibility',
+    coreFunction: 'Create shared commitments with simple yes/no check-ins that everyone can see',
   },
   {
     id: 'concept-2',
-    title: 'The Nudge',
-    oneLiner: 'A quiet assistant that checks in at the right moment to keep momentum alive.',
-    problemAngle: 'Losing steam halfway through, then forgetting to restart',
-    targetAudience: 'Groups that need gentle reminders, not nagging notifications',
-    coreFunction: 'Send perfectly-timed check-ins that reconnect the group to what matters',
+    title: 'The Clarity Mirror',
+    oneLiner: 'Show you exactly where your time goes and where your focus breaks.',
+    problemAngle: 'Feeling busy but never knowing what actually got done',
+    targetAudience: 'People who lose track of what they accomplished',
+    coreFunction: 'Track daily patterns and reflect them back without judgment',
   },
   {
     id: 'concept-3',
-    title: 'The Bet',
-    oneLiner: 'Make it real by putting something on the line together - commitment through stakes.',
-    problemAngle: 'Promises that sound good but disappear by next week',
-    targetAudience: 'Groups that thrive when stakes are clear and visible',
-    coreFunction: 'Create group commitments where everyone can see who followed through',
+    title: 'The Right Nudge',
+    oneLiner: 'Check-ins that feel human, not like notifications you ignore.',
+    problemAngle: 'Getting so many reminders you ignore all of them',
+    targetAudience: 'Groups that need gentle accountability without nagging',
+    coreFunction: 'Send perfectly-timed, context-aware nudges that actually help',
   },
 ];
 
@@ -56,17 +55,32 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
   };
 
   // Determine the theme from selections
-  const hasAccountability = selections.some(s => s.toLowerCase().includes('accountability') || s.toLowerCase().includes('motivation') || s.toLowerCase().includes('promise'));
-  const hasFocus = selections.some(s => s.toLowerCase().includes('focus') || s.toLowerCase().includes('scattered'));
-  const hasDecisions = selections.some(s => s.toLowerCase().includes('decis') || s.toLowerCase().includes('choice'));
+  const hasAccountability = selections.some(s => 
+    s.toLowerCase().includes('bet') || 
+    s.toLowerCase().includes('promise') || 
+    s.toLowerCase().includes('accountab') ||
+    s.toLowerCase().includes('streak')
+  );
+  const hasFocus = selections.some(s => 
+    s.toLowerCase().includes('focus') || 
+    s.toLowerCase().includes('distract') || 
+    s.toLowerCase().includes('timer') ||
+    s.toLowerCase().includes('one thing')
+  );
+  const hasTracking = selections.some(s => 
+    s.toLowerCase().includes('track') || 
+    s.toLowerCase().includes('mirror') || 
+    s.toLowerCase().includes('pattern') ||
+    s.toLowerCase().includes('progress')
+  );
 
-  let themeInsight = 'Your group is drawn to problems around focus, accountability, and making decisions';
-  if (hasDecisions && !hasFocus && !hasAccountability) {
-    themeInsight = 'Your group is wrestling with decision fatigue and analysis paralysis';
-  } else if (hasAccountability && !hasFocus) {
-    themeInsight = 'Your group cares about consistency and keeping promises to themselves';
-  } else if (hasFocus) {
-    themeInsight = 'Your group is fighting distraction and wanting to matter more';
+  let themeInsight = 'Your group is drawn to ideas about focus, tracking, and commitment';
+  if (hasAccountability && !hasFocus && !hasTracking) {
+    themeInsight = 'Your group wants accountability - making promises real through visibility';
+  } else if (hasFocus && !hasAccountability) {
+    themeInsight = 'Your group is fighting distraction and wanting deeper focus';
+  } else if (hasTracking) {
+    themeInsight = 'Your group wants to see patterns - understanding where time and attention go';
   }
 
   return (
@@ -100,7 +114,7 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
         >
           <div className="flex items-center justify-center gap-3 mb-3">
             <Sparkles size={28} className="text-rose-400" />
-            <h1 className="text-4xl font-black text-white tracking-tight">What Your Stars Say</h1>
+            <h1 className="text-4xl font-black text-white tracking-tight">What Could These Become?</h1>
           </div>
         </motion.div>
 
@@ -124,7 +138,7 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
           className="mb-12 p-6 rounded-2xl bg-slate-800/30 border border-slate-700/50 backdrop-blur-sm"
         >
           <p className="text-xs font-semibold text-slate-400 uppercase tracking-[0.1em] mb-3">
-            🌟 Shared Concerns
+            ✨ Ideas You Caught
           </p>
           <div className="flex flex-wrap gap-2">
             {selections.slice(0, 6).map((spark) => (
@@ -151,7 +165,7 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
           className="mb-12"
         >
           <p className="text-sm font-semibold text-slate-300 uppercase tracking-[0.1em] mb-6 text-center">
-            Consider Building:
+            Here are three ways to build on your sparks:
           </p>
           <div className="space-y-4">
             {MOCK_CONCEPTS.map((concept, index) => (
@@ -203,7 +217,7 @@ export const AISynthesis: React.FC<AISynthesisProps> = ({ selections, onSelect, 
           className="text-center pt-8 border-t border-slate-800"
         >
           <p className="text-slate-400 text-sm">
-            These are sparks, not blueprints. Pick one or write your own in the workspace.
+            These are sparks, not blueprints. Pick one to refine, or create your own in the workspace.
           </p>
         </motion.div>
       </div>

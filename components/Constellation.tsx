@@ -32,7 +32,7 @@ export const Constellation: React.FC<ConstellationProps> = ({ selections, onRemo
             ✨ Your Constellation
           </p>
           <p className="text-slate-400 text-xs mt-1">
-            {selections.length} resonance{selections.length !== 1 ? 's' : ''} captured · {Math.max(0, 8 - selections.length)} more to explore
+            {selections.length} idea{selections.length !== 1 ? 's' : ''} captured · {Math.max(0, 3 - selections.length)} more to explore
           </p>
         </div>
 
@@ -123,10 +123,10 @@ export const Constellation: React.FC<ConstellationProps> = ({ selections, onRemo
             transition={{ delay: 0.3 }}
             className="text-center text-xs text-slate-400 mt-6"
           >
-            {selections.length < 8 ? (
-              <p>Select at least {8 - selections.length} more to find the pattern →</p>
+            {selections.length < 3 ? (
+              <p>Select at least {3 - selections.length} more to find the pattern →</p>
             ) : (
-              <p className="text-rose-300 font-semibold">Your constellation is complete. Ready to imagine? ✨</p>
+              <p className="text-rose-300 font-semibold">Your ideas are ready. Time to make them real ✨</p>
             )}
           </motion.div>
         )}

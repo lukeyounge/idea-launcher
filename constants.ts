@@ -31,30 +31,28 @@ export const STAGE_CONFIG: Record<string, Omit<StageData, 'text' | 'locked'>> = 
   }
 };
 
-// All spark bubbles are now problem-focused for groups
-export const SPARK_PROBLEM_OPTIONS = [
-  'losing focus when it matters most',
-  'drowning in too many choices',
-  'starting strong but fading halfway through',
-  'forgetting the things we actually care about',
-  'feeling scattered across too many apps',
-  'wanting accountability but hating being nagged',
-  'procrastinating on decisions until they make themselves',
-  'knowing what to do but not doing it',
-  'decision fatigue by lunchtime',
-  'too many tabs, too many thoughts',
-  'half-finished projects everywhere',
-  'motivation that disappears after day one',
-  'saying yes to everything, finishing nothing',
-  'feeling behind even when we\'re not',
-  'the guilt of an unused app library',
-  'getting lost in planning instead of doing',
-  'breaking promises we make to ourselves',
-  'analysis paralysis on small things'
+export const SPARK_SOLUTION_SEEDS = [
+  'A bet you make with friends',
+  'A mirror that shows your patterns',
+  'Reminders that actually work',
+  'A no-judgment progress tracker',
+  'A timer that knows when you\'re stuck',
+  'Shared promises with real stakes',
+  'A decision-maker that learns you',
+  'The smallest possible to-do list',
+  'A focus mode that locks distractions',
+  'Accountability through visibility',
+  'A streak tracker you can\'t ignore',
+  'Group check-ins that feel human',
+  'Morning intentions, evening reflections',
+  'One thing at a time, enforced',
+  'A clarity journal that asks questions',
+  'The right nudge at the right time',
+  'Progress bars for life goals',
+  'A commitment ring for your team'
 ];
 
-// Deprecated - now using only problems
-export const SPARK_BUILD_OPTIONS = SPARK_PROBLEM_OPTIONS;
+export const SPARK_BUILD_OPTIONS = SPARK_SOLUTION_SEEDS;
 
 export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [
   { category: 'design', text: 'Make it mobile-friendly and responsive' },

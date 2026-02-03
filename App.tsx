@@ -328,13 +328,13 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
               >
                 {state.synthesisConceptTitle && (
                   <div className="mb-4 pb-4 border-b border-rose-100/50">
-                    <p className="text-xs font-black text-rose-600 uppercase tracking-[0.15em] mb-1">🚀 You're Building:</p>
+                    <p className="text-xs font-black text-rose-600 uppercase tracking-[0.15em] mb-1">🚀 Building From Your Sparks:</p>
                     <p className="text-lg font-black text-slate-900">{state.synthesisConceptTitle}</p>
                   </div>
                 )}
                 {state.sparkSelections.length > 0 && (
                   <div>
-                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-[0.1em] mb-3">From your sparks:</p>
+                    <p className="text-xs font-semibold text-slate-600 uppercase tracking-[0.1em] mb-3">Ideas you caught:</p>
                     <div className="flex flex-wrap gap-2">
                       {state.sparkSelections.slice(0, 5).map((item) => (
                         <span key={item} className="text-xs bg-rose-100/70 text-rose-900 font-semibold px-3 py-1.5 rounded-full">

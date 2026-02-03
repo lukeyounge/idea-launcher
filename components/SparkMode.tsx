@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { SPARK_PROBLEM_OPTIONS } from '@/constants';
+import { SPARK_SOLUTION_SEEDS } from '@/constants';
 import { FloatingBubble } from './FloatingBubble';
 import { ParticleField } from './ParticleField';
 import { Constellation } from './Constellation';
@@ -19,12 +19,11 @@ const BUBBLE_COLORS = {
 export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsChange, onProceed }) => {
   const [bubblePositions, setBubblePositions] = useState<Record<string, { x: number; y: number }>>({});
 
-  // All bubbles are now problem-focused for groups
   const allBubbles = useMemo(() => {
-    return SPARK_PROBLEM_OPTIONS.map((text, i) => ({
-      id: `problem-${i}`,
+    return SPARK_SOLUTION_SEEDS.map((text, i) => ({
+      id: `solution-${i}`,
       text,
-      category: 'problem' as const,
+      category: 'solution' as const,
       size: 70 + Math.random() * 20,
       x: Math.random() * (window.innerWidth - 100),
       y: Math.random() * (window.innerHeight * 0.6),
@@ -39,7 +38,7 @@ export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsCh
     }
   };
 
-  const canProceed = selections.length >= 8;
+  const canProceed = selections.length >= 3;
 
   return (
     <div className="relative w-screen h-screen overflow-hidden bg-slate-950">
@@ -81,7 +80,7 @@ export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsCh
             <Sparkles size={32} className="text-rose-400" />
             <div>
               <h1 className="text-4xl font-black text-white tracking-tight">Spark Mode</h1>
-              <p className="text-slate-400 text-sm mt-1">What resonates with your group?</p>
+              <p className="text-slate-400 text-sm mt-1">What sounds exciting to build?</p>
             </div>
           </div>
           <div className="flex items-center gap-3 pointer-events-auto">
