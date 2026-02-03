@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { SPARK_BUILD_OPTIONS, SPARK_PROBLEM_OPTIONS } from '@/constants';
+import { SPARK_PROBLEM_OPTIONS } from '@/constants';
 import { FloatingBubble } from './FloatingBubble';
 import { ParticleField } from './ParticleField';
 import { Constellation } from './Constellation';
@@ -52,7 +52,7 @@ export const SparkMode: React.FC<SparkModeProps> = ({ selections, onSelectionsCh
       {/* Floating bubbles */}
       <div className="absolute inset-0 pointer-events-none">
         {allBubbles.map((bubble) => {
-          const colorConfig = bubble.category === 'build' ? BUBBLE_COLORS.build : BUBBLE_COLORS.problem;
+          const colorConfig = BUBBLE_COLORS.problem;
           return (
             <div key={bubble.id} className="pointer-events-auto">
               <FloatingBubble
