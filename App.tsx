@@ -148,7 +148,7 @@ const App: React.FC = () => {
     setIsPromptApproved(false);
   };
 
-  const allStagesLocked = Object.values(state.stages).every(s => s.locked);
+  const allStagesLocked = (Object.values(state.stages) as import('./types').StageData[]).every(s => s.locked);
   const approvedCount = state.instructions.filter(i => i.isApproved).length;
   const canProgressToReview = approvedCount >= 5;
 
