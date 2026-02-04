@@ -6,7 +6,6 @@ import { STAGE_CONFIG, DEFAULT_INSTRUCTIONS } from './constants';
 import { StageBox } from './components/StageBox';
 import { InstructionChip } from './components/InstructionChip';
 import { SparkMode } from './components/SparkMode';
-import { AISynthesis } from './components/AISynthesis';
 import { RocketShip } from './components/RocketShip';
 import { 
   Rocket, 
@@ -60,7 +59,7 @@ const App: React.FC = () => {
     };
   });
 
-  const [view, setView] = useState<'spark' | 'synthesis' | 'workspace' | 'approval' | 'final_review'>('spark');
+  const [view, setView] = useState<'spark' | 'workspace' | 'approval' | 'final_review'>('spark');
   const [activeStageId, setActiveStageId] = useState<StageId | null>(null);
   const [showCopySuccess, setShowCopySuccess] = useState(false);
   const [isPromptApproved, setIsPromptApproved] = useState(false);
@@ -210,25 +209,7 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
         <SparkMode
           selections={state.sparkSelections}
           onSelectionsChange={(selections) => setState(prev => ({ ...prev, sparkSelections: selections }))}
-          onProceed={() => setView('synthesis')}
-        />
-      ) : view === 'synthesis' ? (
-        <AISynthesis
-          selections={state.sparkSelections}
-          onSelect={(concept) => {
-            setState(prev => ({
-              ...prev,
-              synthesisConceptTitle: concept.title,
-              stages: {
-                ...prev.stages,
-                problem: { ...prev.stages.problem, text: concept.problemAngle },
-                people: { ...prev.stages.people, text: concept.targetAudience },
-                solution: { ...prev.stages.solution, text: concept.coreFunction },
-              }
-            }));
-            setView('workspace');
-          }}
-          onBack={() => setView('spark')}
+          onProceed={() => setView('workspace')}
         />
       ) : (
     <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24 relative overflow-visible">
