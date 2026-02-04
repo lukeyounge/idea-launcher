@@ -175,6 +175,11 @@ const App: React.FC = () => {
     setCustomInput({ design: '', functionality: '', users: '' });
   };
 
+  const handleSparkSelect = (idea: string) => {
+    setState(prev => ({ ...prev, sparkSelections: [idea] }));
+    setView('workspace');
+  };
+
   const generatePromptText = () => {
     const approved = state.instructions.filter(i => i.isApproved);
     const design = approved.filter(i => i.category === 'design').map(i => `- ${i.text}`).join('\n');
@@ -207,9 +212,7 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
     <>
       {view === 'spark' ? (
         <SparkMode
-          selections={state.sparkSelections}
-          onSelectionsChange={(selections) => setState(prev => ({ ...prev, sparkSelections: selections }))}
-          onProceed={() => setView('workspace')}
+          onSelect={handleSparkSelect}
         />
       ) : (
     <div className="max-w-7xl mx-auto px-6 py-12 lg:py-24 relative overflow-visible">
