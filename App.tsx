@@ -69,6 +69,11 @@ const App: React.FC = () => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
   }, [state]);
 
+  // Scroll to top when view changes
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [view]);
+
   // Synthesize prompt when entering final_review
   useEffect(() => {
     if (view === 'final_review' && !synthesizedPrompt && !isSynthesizing) {

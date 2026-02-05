@@ -28,7 +28,18 @@ export const StageBox: React.FC<StageBoxProps> = ({
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const [showGuidance, setShowGuidance] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const boxRef = useRef<HTMLDivElement>(null);
   const starter = STAGE_STARTERS[data.id] || '';
+
+  // Scroll the box into view when it becomes active (helps on mobile with keyboard)
+  useEffect(() => {
+    if (isActive && boxRef.current) {
+      // Small delay to let the expansion animation start
+      setTimeout(() => {
+        boxRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  }, [isActive]);
   const guidance = STAGE_GUIDANCE[data.id] || [];
 
   // Minimum character threshold before AI feedback button is available
@@ -114,7 +125,7 @@ export const StageBox: React.FC<StageBoxProps> = ({
   }, [feedback, feedbackKey]);
 
   return (
-    <div className="relative mb-6 last:mb-0">
+    <div ref={boxRef} className="relative mb-6 last:mb-0">
       {/* Guidance panel - shows on left when active (desktop only) */}
       <AnimatePresence>
         {isActive && !data.locked && showGuidance && (
