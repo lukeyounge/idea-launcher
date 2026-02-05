@@ -207,8 +207,6 @@ RULES:
 - Do NOT invent features, audiences, or goals the student didn't mention.
 - Keep the tone casual and teen-friendly — don't make it sound corporate or overly polished.
 
-${POWER_SKILLS_CONTEXT}
-
 Here is what the student wrote:
 
 APP NAME: "${appName}"
@@ -224,17 +222,19 @@ User Experience: ${userItems.length > 0 ? userItems.map(item => `"${item}"`).joi
 App Screens: ${screenItems.length > 0 ? screenItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 
 Assemble this into a prompt with these sections in order:
-1. The Power Skills context (all 8 skills with descriptions) so the AI knows what Power Skills are
-2. App name and why it exists (use the student's words)
-3. Who it's for (use the student's words)
-4. What it does and how it works (use the student's words)
-5. VISUAL VIBE — list the design items they picked
-6. HOW IT WORKS — list the functionality items they picked
-7. USER FEELINGS — list the user experience items they picked
-8. APP SCREENS — list the screens/pages they picked
-9. End with: "Build this using React and Tailwind CSS."
+1. App name and why it exists (use the student's words)
+2. Who it's for (use the student's words)
+3. What it does and how it works (use the student's words)
+4. VISUAL VIBE — list the design items they picked
+5. HOW IT WORKS — list the functionality items they picked
+6. USER FEELINGS — list the user experience items they picked
+7. APP SCREENS — list the screens/pages they picked
+8. End with: "Build this using React and Tailwind CSS."
+9. Finally, add The Power Skills context (all 8 skills with descriptions) so the AI knows what Power Skills are
 
 Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markdown code blocks.`;
+
+    const synthesisPropWithContext = synthesisProp + `\n\nHere is the Power Skills context to add at the very end:\n\n${POWER_SKILLS_CONTEXT}`;
 
     const response = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
@@ -249,7 +249,7 @@ Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markd
             {
               parts: [
                 {
-                  text: synthesisProp,
+                  text: synthesisPropWithContext,
                 },
               ],
             },
@@ -311,16 +311,6 @@ function generateFallbackPrompt(
 
   return `# Build "${appName}" - A Power Skills App
 
-## SBF Power Skills Context
-
-This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 8 Power Skills:
-
-${powerSkillsWithDescriptions}
-
-The app should reference these specific Power Skills where relevant.
-
----
-
 ## The App
 
 **App Name:** ${appName}
@@ -355,5 +345,15 @@ ${screenItems.length > 0 ? screenItems.map(item => `- ${item}`).join('\n') : '- 
 
 ---
 
-Build this using React and Tailwind CSS. Make it look modern, engaging, and appropriate for students developing their Power Skills.`;
+Build this using React and Tailwind CSS.
+
+---
+
+## SBF Power Skills Context
+
+This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 8 Power Skills:
+
+${powerSkillsWithDescriptions}
+
+The app should reference these specific Power Skills where relevant.`;
 }
