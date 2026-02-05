@@ -11,7 +11,7 @@ export interface StageData {
 
 export interface Instruction {
   id: string;
-  category: 'design' | 'functionality' | 'users';
+  category: 'design' | 'functionality' | 'users' | 'screens';
   text: string;
   isApproved: boolean;
   isCustom?: boolean;

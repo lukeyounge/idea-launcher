@@ -187,14 +187,15 @@ export async function synthesizePrompt(
   how: string,
   designItems: string[],
   functionalityItems: string[],
-  userItems: string[]
+  userItems: string[],
+  screenItems: string[]
 ): Promise<PromptSynthesisResponse> {
   try {
     const apiKey = (process.env as any).GEMINI_API_KEY;
     if (!apiKey) {
       console.error('Gemini API key not configured');
       return {
-        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
+        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
       };
     }
 
@@ -220,6 +221,7 @@ They also picked these implementation details:
 Visual Design: ${designItems.length > 0 ? designItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 Functionality: ${functionalityItems.length > 0 ? functionalityItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 User Experience: ${userItems.length > 0 ? userItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
+App Screens: ${screenItems.length > 0 ? screenItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 
 Assemble this into a prompt with these sections in order:
 1. The Power Skills context (all 8 skills with descriptions) so the AI knows what Power Skills are
@@ -229,7 +231,8 @@ Assemble this into a prompt with these sections in order:
 5. VISUAL VIBE — list the design items they picked
 6. HOW IT WORKS — list the functionality items they picked
 7. USER FEELINGS — list the user experience items they picked
-8. End with: "Build this using React and Tailwind CSS."
+8. APP SCREENS — list the screens/pages they picked
+9. End with: "Build this using React and Tailwind CSS."
 
 Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markdown code blocks.`;
 
@@ -262,7 +265,7 @@ Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markd
     if (!response.ok) {
       console.error('Gemini synthesis API error:', response.statusText);
       return {
-        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
+        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
       };
     }
 
@@ -271,7 +274,7 @@ Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markd
 
     if (!synthesized) {
       return {
-        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
+        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
       };
     }
 
@@ -281,7 +284,7 @@ Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markd
   } catch (error) {
     console.error('Prompt synthesis error:', error);
     return {
-      prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
+      prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
     };
   }
 }
@@ -294,7 +297,8 @@ function generateFallbackPrompt(
   how: string,
   designItems: string[],
   functionalityItems: string[],
-  userItems: string[]
+  userItems: string[],
+  screenItems: string[]
 ): string {
   const powerSkillsWithDescriptions = `1. **Agility** – Staying positive and adapting quickly when things change or don't go as planned.
 2. **Analytical Thinking** – Breaking down information, spotting patterns, and solving problems using what matters most.
@@ -345,6 +349,9 @@ ${functionalityItems.length > 0 ? functionalityItems.map(item => `- ${item}`).jo
 
 ### USER FEELINGS
 ${userItems.length > 0 ? userItems.map(item => `- ${item}`).join('\n') : '- Encouraging and supportive\n- Celebrates progress'}
+
+### APP SCREENS
+${screenItems.length > 0 ? screenItems.map(item => `- ${item}`).join('\n') : '- Home screen or dashboard\n- Progress tracking page'}
 
 ---
 

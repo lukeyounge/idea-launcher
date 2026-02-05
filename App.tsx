@@ -21,7 +21,8 @@ import {
   Copy,
   Loader2,
   Pencil,
-  CheckCircle2
+  CheckCircle2,
+  Layers
 } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'idea-launcher-power-skills-v1';
@@ -84,6 +85,7 @@ const App: React.FC = () => {
         const designItems = approved.filter(i => i.category === 'design').map(i => i.text);
         const functionalityItems = approved.filter(i => i.category === 'functionality').map(i => i.text);
         const userItems = approved.filter(i => i.category === 'users').map(i => i.text);
+        const screenItems = approved.filter(i => i.category === 'screens').map(i => i.text);
 
         const result = await synthesizePrompt(
           state.appName || state.selectedApp?.name || 'Power Skills App',
@@ -93,7 +95,8 @@ const App: React.FC = () => {
           state.stages.how.text,
           designItems,
           functionalityItems,
-          userItems
+          userItems,
+          screenItems
         );
         setSynthesizedPrompt(result.prompt);
         setIsSynthesizing(false);
@@ -147,8 +150,9 @@ const App: React.FC = () => {
     design: state.instructions.some(i => i.isApproved && i.category === 'design'),
     functionality: state.instructions.some(i => i.isApproved && i.category === 'functionality'),
     users: state.instructions.some(i => i.isApproved && i.category === 'users'),
+    screens: state.instructions.some(i => i.isApproved && i.category === 'screens'),
   };
-  const allCategoriesCovered = approvedByCategory.design && approvedByCategory.functionality && approvedByCategory.users;
+  const allCategoriesCovered = approvedByCategory.design && approvedByCategory.functionality && approvedByCategory.users && approvedByCategory.screens;
   const canProgressToReview = allCategoriesCovered && state.appName.trim().length > 0;
 
   const handleReset = () => {
@@ -227,7 +231,8 @@ const App: React.FC = () => {
   const SECTION_CONFIG = [
     { id: 'design', label: "What should it look like?", icon: <Layout className="text-rose-600" size={24} />, description: 'The vibe, colours, and style of your app' },
     { id: 'functionality', label: "What should it do?", icon: <Zap className="text-slate-900" size={24} />, description: 'The features people will actually use' },
-    { id: 'users', label: "How should it feel to use?", icon: <Heart className="text-rose-500" size={24} />, description: 'The experience someone has when they open it' }
+    { id: 'users', label: "How should it feel to use?", icon: <Heart className="text-rose-500" size={24} />, description: 'The experience someone has when they open it' },
+    { id: 'screens', label: "What screens does it need?", icon: <Layers className="text-slate-700" size={24} />, description: 'The key pages or views your app has' }
   ];
 
   return (

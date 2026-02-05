@@ -135,6 +135,10 @@ export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [
   { category: 'design', text: 'Fun colours and animations' },
   { category: 'design', text: 'Simple to navigate' },
   { category: 'design', text: 'Looks great on phones' },
+  { category: 'design', text: 'Dark mode with bright accents' },
+  { category: 'design', text: 'Warm and energetic colours' },
+  { category: 'design', text: 'Minimal and calm' },
+  { category: 'design', text: 'Bold and playful' },
 
   // Functionality - What should it be able to do?
   { category: 'functionality', text: 'Tells you how you\'re doing as you go' },
@@ -142,10 +146,22 @@ export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [
   { category: 'functionality', text: 'Earns you points, badges, or streaks' },
   { category: 'functionality', text: 'Lets you share results with friends' },
   { category: 'functionality', text: 'Saves where you left off' },
+  { category: 'functionality', text: 'Has example content built in already' },
+  { category: 'functionality', text: 'Works differently each day' },
+  { category: 'functionality', text: 'Has separate pages for different things' },
 
   // Users - How should it feel to use?
   { category: 'users', text: 'Feels friendly and encouraging' },
   { category: 'users', text: 'Quick to use — not a big time commitment' },
   { category: 'users', text: 'Gives you real tips, not just info' },
-  { category: 'users', text: 'Makes you want to come back' }
+  { category: 'users', text: 'Makes you want to come back' },
+  { category: 'users', text: 'Easy to use in under 5 minutes' },
+  { category: 'users', text: 'Fun to show a friend' },
+  { category: 'users', text: 'Like a game, not homework' },
+
+  // Screens - What screens does it need?
+  { category: 'screens', text: 'A home screen or dashboard' },
+  { category: 'screens', text: 'A progress or history page' },
+  { category: 'screens', text: 'A profile or settings page' },
+  { category: 'screens', text: 'An onboarding or welcome screen' }
 ];
