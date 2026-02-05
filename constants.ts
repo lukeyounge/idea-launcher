@@ -68,16 +68,16 @@ export const STAGE_FEEDBACK: Record<string, { checks: { test: (text: string) => 
 };
 
 export const SPARK_BUBBLES = [
-  { text: 'A quiz that turns your personality into a superpower', emoji: '🦸' },
-  { text: 'A goal tracker that actually feels good to use', emoji: '🎯' },
-  { text: 'A team challenge board for your friend group', emoji: '👥' },
-  { text: 'A journal that asks you the right questions', emoji: '📖' },
-  { text: 'A dream-to-plan converter', emoji: '✨' },
-  { text: 'A creative story builder with a twist', emoji: '📝' },
-  { text: 'A mood check-in that gives you a pep talk', emoji: '😊' },
-  { text: 'A fun way to quiz your mates', emoji: '🧠' },
-  { text: 'A vision board you can actually build', emoji: '🖼️' },
-  { text: 'A daily challenge generator', emoji: '⚡' },
+  { text: 'Health & Wellness', emoji: '🏥' },
+  { text: 'Social Connection', emoji: '👥' },
+  { text: 'Productivity & Time', emoji: '⏰' },
+  { text: 'Creative Expression', emoji: '🎨' },
+  { text: 'Learning & Growth', emoji: '📚' },
+  { text: 'Entertainment & Fun', emoji: '🎮' },
+  { text: 'Environmental Impact', emoji: '🌱' },
+  { text: 'Community & Belonging', emoji: '🏘️' },
+  { text: 'Money & Finance', emoji: '💰' },
+  { text: 'Mental Health & Wellbeing', emoji: '🧠' },
 ];
 
 export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [

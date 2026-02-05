@@ -3,7 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StageData } from '../types';
 import { STAGE_STARTERS, STAGE_FEEDBACK } from '../constants';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, MessageCircle } from 'lucide-react';
+import { CheckCircle2, Lock, MessageCircle, Loader2 } from 'lucide-react';
+import { validateStageContent } from '../services/geminiService';
 
 interface StageBoxProps {
   data: StageData;
@@ -20,18 +21,63 @@ export const StageBox: React.FC<StageBoxProps> = ({
   onUpdate,
   onReadyToLock
 }) => {
-  const isReady = data.text.length >= 80 && !data.locked;
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackKey, setFeedbackKey] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
+  const [isValid, setIsValid] = useState(false);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const starter = STAGE_STARTERS[data.id] || '';
 
+  // Minimum character threshold before validation kicks in
+  const MIN_CHAR_COUNT = 30;
+
+  // Update prompt index based on text length
   useEffect(() => {
     if (data.text.length > 60) setCurrentPromptIndex(2);
     else if (data.text.length > 30) setCurrentPromptIndex(1);
     else setCurrentPromptIndex(0);
   }, [data.text]);
+
+  // Debounced validation as user types
+  useEffect(() => {
+    // Clear any pending validation
+    if (validationTimeoutRef.current) {
+      clearTimeout(validationTimeoutRef.current);
+    }
+
+    // Don't validate if text is too short
+    if (data.text.length < MIN_CHAR_COUNT) {
+      setIsValid(false);
+      setValidationMessage(null);
+      setIsValidating(false);
+      return;
+    }
+
+    // Start validation after debounce period
+    setIsValidating(true);
+    validationTimeoutRef.current = setTimeout(async () => {
+      try {
+        const result = await validateStageContent(data.id, data.text);
+        setIsValid(result.isValid);
+        setValidationMessage(result.feedbackMessage);
+      } catch (error) {
+        console.error('Validation failed:', error);
+        setIsValid(false);
+        setValidationMessage('Check your response');
+      } finally {
+        setIsValidating(false);
+      }
+    }, 500); // 500ms debounce
+
+    return () => {
+      if (validationTimeoutRef.current) {
+        clearTimeout(validationTimeoutRef.current);
+      }
+    };
+  }, [data.text, data.id]);
 
   const handleFocus = () => {
     if (data.text === '') {
@@ -155,17 +201,33 @@ export const StageBox: React.FC<StageBoxProps> = ({
 
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-3">
-                    <div className="h-2 w-40 bg-slate-100 rounded-full overflow-hidden shadow-inner">
-                      <motion.div 
-                        className="h-full bg-gradient-to-r from-rose-400 to-rose-600"
-                        animate={{ width: `${Math.min(100, (data.text.length / 80) * 100)}%` }}
-                      />
-                    </div>
-                    <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                      {data.text.length >= 80 ? 'Looking good!' : `${Math.max(0, 80 - data.text.length)} more chars`}
-                    </span>
+                    {data.text.length < MIN_CHAR_COUNT ? (
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                        {Math.max(0, MIN_CHAR_COUNT - data.text.length)} more characters
+                      </span>
+                    ) : isValidating ? (
+                      <div className="flex items-center gap-2">
+                        <Loader2 size={14} className="text-rose-500 animate-spin" />
+                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                          Checking...
+                        </span>
+                      </div>
+                    ) : isValid ? (
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
+                          Ready to lock
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">
+                          {validationMessage || 'Add more detail...'}
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  {isReady && (
+                  {isValid && !data.locked && (
                     <motion.button
                       initial={{ scale: 0.9, opacity: 0, y: 10 }}
                       animate={{ scale: 1, opacity: 1, y: 0 }}
