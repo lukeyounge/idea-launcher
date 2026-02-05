@@ -405,7 +405,7 @@ const App: React.FC = () => {
                     type="text"
                     value={state.appName}
                     onChange={(e) => setState(prev => ({ ...prev, appName: e.target.value }))}
-                    placeholder="e.g., SkillBoost, PowerUp, MySkills..."
+                    placeholder=""
                     className="w-full p-5 rounded-2xl border-2 border-slate-100 focus:border-rose-400 focus:ring-0 text-lg font-bold text-slate-900 placeholder:text-slate-300 transition-colors"
                   />
                 </section>
