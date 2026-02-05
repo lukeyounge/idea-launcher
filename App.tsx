@@ -258,7 +258,7 @@ const App: React.FC = () => {
                 </h1>
                 <div className="flex items-center gap-4 mt-4 justify-center md:justify-start">
                   <div className="h-[2px] w-12 bg-rose-500 rounded-full" />
-                  <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">Power Skills Workshop</p>
+                  <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">SBF Vibe Coding Workshop</p>
                 </div>
               </motion.div>
             </div>

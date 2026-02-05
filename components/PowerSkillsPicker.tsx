@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { POWER_SKILLS_APPS } from '../constants';
 import { PowerSkillsApp } from '../types';
-import { Sparkles, ArrowRight, Lightbulb } from 'lucide-react';
+import { ArrowRight, Lightbulb } from 'lucide-react';
 
 interface PowerSkillsPickerProps {
   onSelect: (app: PowerSkillsApp | null, customIdea?: string) => void;
@@ -105,17 +105,22 @@ export const PowerSkillsPicker: React.FC<PowerSkillsPickerProps> = ({ onSelect }
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Sparkles className="text-rose-400" size={28} />
-            <span className="text-rose-400 font-black text-sm uppercase tracking-[0.3em]">Power Skills Workshop</span>
+          <div className="mb-8">
+            <h1 className="text-5xl md:text-6xl font-black text-white tracking-[-0.05em] flex items-center gap-2 justify-center leading-none mb-2">
+              Idea<span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-500 to-rose-700">Launcher</span>
+            </h1>
+            <div className="flex items-center gap-4 justify-center">
+              <div className="h-[2px] w-12 bg-rose-500 rounded-full" />
+              <p className="text-slate-400 font-bold uppercase tracking-[0.3em] text-[10px]">SBF Vibe Coding Workshop</p>
+            </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-black text-white leading-tight mb-4">
+          <h2 className="text-4xl md:text-5xl font-black text-white leading-tight mb-4">
             Let's make something cool around the{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 to-rose-600">
               Power Skills!
             </span>
-          </h1>
+          </h2>
 
           <p className="text-slate-400 text-lg max-w-2xl mx-auto">
             Here are 4 apps you can vibe code with no coding experience
