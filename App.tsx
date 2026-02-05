@@ -64,7 +64,6 @@ const App: React.FC = () => {
   const [view, setView] = useState<'spark' | 'workspace' | 'approval' | 'final_review'>('spark');
   const [activeStageId, setActiveStageId] = useState<StageId | null>(null);
   const [showCopySuccess, setShowCopySuccess] = useState(false);
-  const [isPromptApproved, setIsPromptApproved] = useState(false);
   const [customInput, setCustomInput] = useState<Record<string, string>>({
     design: '',
     functionality: '',
@@ -201,7 +200,6 @@ const App: React.FC = () => {
     setIsTimerActive(false);
     setTimerSeconds(0);
     setNudge(null);
-    setIsPromptApproved(false);
     setCustomInput({ design: '', functionality: '', users: '' });
     setSynthesizedPrompt(null);
     setIsSynthesizing(false);
@@ -550,102 +548,65 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
                 </div>
               )}
 
-              <div className="mt-12 flex flex-col items-center justify-center gap-8">
-                {!isPromptApproved ? (
-                  <div className="flex flex-col sm:flex-row gap-4 w-full justify-center flex-wrap">
+              <div className="mt-12 flex flex-col items-center justify-center gap-6">
+                <div className="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setView('approval')}
+                    className="bg-slate-50 text-slate-500 px-12 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 uppercase tracking-widest text-xs hover:bg-slate-100 transition-all border border-slate-100"
+                  >
+                    Back to Details <ArrowLeft size={20} />
+                  </motion.button>
+                  {synthesizedPrompt && (
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      onClick={() => setView('approval')}
-                      className="bg-slate-50 text-slate-500 px-12 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 uppercase tracking-widest text-xs hover:bg-slate-100 transition-all border border-slate-100"
-                    >
-                      Back to Details <ArrowLeft size={20} />
-                    </motion.button>
-                    {synthesizedPrompt && (
-                      <motion.button
-                        whileHover={{ scale: 1.05 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={() => {
-                          setSynthesizedPrompt(null);
-                          setTimeout(() => {
-                            setIsSynthesizing(true);
-                            const approved = state.instructions.filter(i => i.isApproved);
-                            const designItems = approved.filter(i => i.category === 'design').map(i => i.text);
-                            const functionalityItems = approved.filter(i => i.category === 'functionality').map(i => i.text);
-                            const userItems = approved.filter(i => i.category === 'users').map(i => i.text);
-                            synthesizePrompt(
-                              state.stages.problem.text,
-                              state.stages.people.text,
-                              state.stages.solution.text,
-                              designItems,
-                              functionalityItems,
-                              userItems
-                            ).then(result => {
-                              setSynthesizedPrompt(result.prompt);
-                              setIsSynthesizing(false);
-                            });
-                          }, 300);
-                        }}
-                        disabled={isSynthesizing}
-                        className="bg-slate-100 text-slate-600 px-12 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 uppercase tracking-widest text-xs hover:bg-slate-200 transition-all border border-slate-200 disabled:opacity-50"
-                      >
-                        <RefreshCcw size={16} /> Refine Prompt
-                      </motion.button>
-                    )}
-                    <motion.button
-                      whileHover={{ scale: 1.05, y: -4 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => setIsPromptApproved(true)}
+                      onClick={() => {
+                        setSynthesizedPrompt(null);
+                        setTimeout(() => {
+                          setIsSynthesizing(true);
+                          const approved = state.instructions.filter(i => i.isApproved);
+                          const designItems = approved.filter(i => i.category === 'design').map(i => i.text);
+                          const functionalityItems = approved.filter(i => i.category === 'functionality').map(i => i.text);
+                          const userItems = approved.filter(i => i.category === 'users').map(i => i.text);
+                          synthesizePrompt(
+                            state.stages.problem.text,
+                            state.stages.people.text,
+                            state.stages.solution.text,
+                            designItems,
+                            functionalityItems,
+                            userItems
+                          ).then(result => {
+                            setSynthesizedPrompt(result.prompt);
+                            setIsSynthesizing(false);
+                          });
+                        }, 300);
+                      }}
                       disabled={isSynthesizing}
-                      className="glow-button bg-rose-600 text-white px-16 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(225,29,72,0.3)] uppercase tracking-[0.2em] text-xs disabled:opacity-50"
+                      className="bg-slate-100 text-slate-600 px-12 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 uppercase tracking-widest text-xs hover:bg-slate-200 transition-all border border-slate-200 disabled:opacity-50"
                     >
-                      Confirm Build <ThumbsUp size={20} strokeWidth={3} />
+                      <RefreshCcw size={16} /> Refine Prompt
                     </motion.button>
-                  </div>
-                ) : (
-                  <div className="flex flex-col items-center gap-8 w-full">
-                    <motion.div 
-                       initial={{ opacity: 0, y: 10 }}
-                       animate={{ opacity: 1, y: 0 }}
-                       className="flex items-center gap-3 text-emerald-500 font-black uppercase tracking-[0.2em] text-sm"
-                    >
-                      <div className="p-2 bg-emerald-50 rounded-lg">
-                        <CheckCircle size={22} strokeWidth={3} />
-                      </div>
-                      System Validated
-                    </motion.div>
-                    <div className="flex flex-col sm:flex-row gap-6 w-full justify-center">
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setIsPromptApproved(false)}
-                        className="bg-white border-2 border-slate-100 text-slate-400 px-12 py-6 rounded-[2.25rem] font-black uppercase tracking-widest text-xs hover:border-slate-300 transition-all"
-                      >
-                        Roll Back
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.05, y: -5 }}
-                        whileTap={{ scale: 0.95 }}
-                        onClick={handleCopyPrompt}
-                        className="glow-button bg-slate-900 text-white px-20 py-7 rounded-[2.25rem] font-black flex items-center justify-center gap-5 shadow-[0_30px_60px_rgba(0,0,0,0.3)] uppercase tracking-[0.3em] text-lg hover:bg-black transition-all"
-                      >
-                        {showCopySuccess ? (
-                          <>Brief Secured! <Sparkles className="text-amber-400" /></>
-                        ) : (
-                          <>Extract Prompt <Copy size={28} strokeWidth={2.5} /></>
-                        )}
-                      </motion.button>
-                    </div>
-                  </div>
-                )}
+                  )}
+                  <motion.button
+                    whileHover={{ scale: 1.05, y: -5 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={handleCopyPrompt}
+                    disabled={isSynthesizing}
+                    className="glow-button bg-rose-600 text-white px-16 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(225,29,72,0.3)] uppercase tracking-[0.2em] text-xs disabled:opacity-50 hover:bg-rose-700 transition-all"
+                  >
+                    {showCopySuccess ? (
+                      <>Copied! <Sparkles size={20} strokeWidth={2.5} className="text-amber-400" /></>
+                    ) : (
+                      <>Copy the Prompt <Copy size={20} strokeWidth={2.5} /></>
+                    )}
+                  </motion.button>
+                </div>
+                <p className="text-center text-slate-500 text-sm font-semibold max-w-md">
+                  Copy your prompt above and paste it into Claude to start vibe-coding.
+                </p>
               </div>
-            </div>
-
-            <div className="flex flex-col items-center gap-4">
-              <p className="text-center text-slate-300 text-[11px] font-black uppercase tracking-[0.3em] px-12 leading-relaxed max-w-lg">
-                Activate the sync to push your strategy into Google AI Studio. 
-                Your architectural journey begins now.
-              </p>
             </div>
           </motion.div>
         )}

@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { SPARK_BUBBLES } from '@/constants';
 import { FloatingBubble } from './FloatingBubble';
 import { ParticleField } from './ParticleField';
-import { Sparkles, ArrowRight } from 'lucide-react';
+import { Sparkles, ArrowRight, ChevronRight } from 'lucide-react';
 
 interface SparkModeProps {
   onSelect: (idea: string) => void;
@@ -102,7 +102,7 @@ export const SparkMode: React.FC<SparkModeProps> = ({ onSelect }) => {
       <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="absolute top-8 left-8 right-8 z-30 pointer-events-none"
+        className="absolute top-8 left-8 right-8 z-30 flex items-start justify-between"
       >
         <div className="flex items-center gap-3">
           <Sparkles size={32} className="text-rose-400" />
@@ -111,6 +111,14 @@ export const SparkMode: React.FC<SparkModeProps> = ({ onSelect }) => {
             <p className="text-slate-400 text-sm mt-1">What sounds fun to build?</p>
           </div>
         </div>
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          onClick={() => onSelect('')}
+          className="pointer-events-auto flex items-center gap-2 px-6 py-3 rounded-2xl bg-white/10 border border-white/20 text-white hover:bg-white/20 hover:border-white/40 transition-all font-semibold text-sm backdrop-blur-sm"
+        >
+          Skip <ChevronRight size={18} strokeWidth={2.5} />
+        </motion.button>
       </motion.div>
 
       {/* Own idea input modal */}
