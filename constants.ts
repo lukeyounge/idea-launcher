@@ -6,25 +6,25 @@ export const POWER_SKILLS_APPS: PowerSkillsApp[] = [
   {
     id: 'coach',
     name: 'Power Skills Coach',
-    description: 'An interactive app that teaches one Power Skill at a time using quizzes, examples, and challenges',
+    description: 'An interactive app that teaches one Power Skill at a time using lessons, tips, and mini-challenges to help you level up',
     icon: '🎯'
   },
   {
-    id: 'self-check',
-    name: 'Power Skills Self-Check',
-    description: 'A quick tool that helps you reflect on your skills today and gives you personalised feedback',
-    icon: '🪞'
-  },
-  {
-    id: 'snapshot',
-    name: 'Power Skills Snapshot Quiz',
-    description: 'Answer questions and get a "Power Skills profile" with strengths and growth areas',
+    id: 'quiz',
+    name: 'Power Skills Profile Quiz',
+    description: 'A fun quiz that reveals your Power Skills strengths and growth areas with a personalised profile you can share',
     icon: '📊'
   },
   {
-    id: 'journey',
-    name: 'Power Skills Story Journey',
-    description: 'Explore Power Skills through interactive stories and decision-making scenarios',
+    id: 'daily',
+    name: 'Daily Power Challenge',
+    description: 'A daily app that gives you a new real-world micro-challenge tied to a different Power Skill each day',
+    icon: '⚡'
+  },
+  {
+    id: 'scenarios',
+    name: 'Power Skills Scenarios',
+    description: 'A choose-your-own-adventure app where you face real-life situations and discover which Power Skills you use',
     icon: '📖'
   }
 ];
