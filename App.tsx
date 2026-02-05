@@ -33,7 +33,7 @@ import {
 } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'idea-launcher-state-red-v5';
-const STAGE_TIMER_SECONDS = 20;
+const STAGE_TIMER_SECONDS = 600; // 10 minutes
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>(() => {
