@@ -70,33 +70,33 @@ export const STAGE_CONFIG: Record<string, Omit<StageData, 'text' | 'locked'>> = 
 
 // Sentence starters for each stage box
 export const STAGE_STARTERS: Record<string, string> = {
-  why: "This app exists because ",
-  who: "The people who need this are ",
-  what: "The app helps by ",
-  how: "It works by "
+  why: "People would use this app because ",
+  who: "The people who'd love this app are ",
+  what: "This app helps people by ",
+  how: "When you open the app, the first thing you do is "
 };
 
 // Hardwired guidance prompts (shown on focus, not AI-generated)
 export const STAGE_GUIDANCE: Record<string, string[]> = {
   why: [
-    "Think about a moment when you or someone struggled with a Power Skill",
-    "What would be different if this problem was solved?",
-    "Why haven't existing tools fixed this?"
+    "What would make someone want to open this app?",
+    "Finish this sentence: 'I wish there was an app that...'",
+    "Why would this be fun or useful for someone your age?"
   ],
   who: [
-    "Picture one specific person who would love this",
-    "What's their daily life like?",
-    "What frustrates them most about developing skills?"
+    "Think of one person you know who'd love this — what are they like?",
+    "How old are they? What do they care about?",
+    "When would they use this — at school, at home, on the bus?"
   ],
   what: [
-    "Describe the first thing users see when they open the app",
-    "What's the ONE main action they take?",
-    "What do they get out of it?"
+    "If you had 10 seconds to explain this app to a friend, what would you say?",
+    "What's the main thing someone actually does in your app?",
+    "What does someone get out of using it?"
   ],
   how: [
-    "Walk through a typical use session step by step",
-    "How does it connect to real Power Skills?",
-    "What keeps users coming back?"
+    "What's the very first thing someone sees or does when they open it?",
+    "What happens in the middle — do they choose something, answer something, get a tip?",
+    "How does it finish — what does the app show them or give them at the end?"
   ]
 };
 
