@@ -292,19 +292,6 @@ const App: React.FC = () => {
                   </p>
                 </motion.div>
 
-                {/* Progress Visual - Fixed to viewport */}
-                <div className="hidden lg:fixed lg:right-8 lg:top-8 lg:w-72 lg:z-40">
-                  <div className="bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white/60">
-                    <ProgressVisual
-                      whyLocked={state.stages.why.locked}
-                      whoLocked={state.stages.who.locked}
-                      whatLocked={state.stages.what.locked}
-                      howLocked={state.stages.how.locked}
-                      onContinue={() => setView('details')}
-                    />
-                  </div>
-                </div>
-
                 <motion.div
                   key="workspace"
                   initial={{ opacity: 0, y: 20 }}
@@ -312,8 +299,21 @@ const App: React.FC = () => {
                   exit={{ opacity: 0, y: -20 }}
                   className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
                 >
+                  {/* Progress Visual */}
+                  <div className="lg:col-span-4 flex justify-center order-2 lg:order-1">
+                    <div className="sticky top-8 w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white/60">
+                      <ProgressVisual
+                        whyLocked={state.stages.why.locked}
+                        whoLocked={state.stages.who.locked}
+                        whatLocked={state.stages.what.locked}
+                        howLocked={state.stages.how.locked}
+                        onContinue={() => setView('details')}
+                      />
+                    </div>
+                  </div>
+
                   {/* Stage Boxes */}
-                  <div className="lg:col-span-12 order-1 lg:order-1 space-y-4">
+                  <div className="lg:col-span-8 order-1 lg:order-2 space-y-4">
                     <StageBox
                       data={state.stages.why}
                       isActive={activeStageId === 'why'}
