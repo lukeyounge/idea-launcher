@@ -127,13 +127,20 @@ export const StageBox: React.FC<StageBoxProps> = ({
       >
         <div className="p-10">
           <div className="flex justify-between items-center mb-6">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 flex-1">
               <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-xs uppercase tracking-tighter ${data.locked ? 'bg-slate-100 text-slate-400' : 'bg-rose-100 text-rose-600'}`}>
                 {data.id === 'problem' ? '1' : data.id === 'people' ? '2' : '3'}
               </div>
-              <h3 className={`text-2xl font-black tracking-tight ${data.locked ? 'text-slate-400' : 'text-slate-900'}`}>
-                {data.label}
-              </h3>
+              <div className="flex-1">
+                <h3 className={`text-2xl font-black tracking-tight ${data.locked ? 'text-slate-400' : 'text-slate-900'}`}>
+                  {data.label}
+                </h3>
+                <p className={`text-xs mt-1 ${data.locked ? 'text-slate-400' : 'text-slate-500'}`}>
+                  {data.id === 'problem' && 'What is the pain point people face?'}
+                  {data.id === 'people' && 'Who are you building this for?'}
+                  {data.id === 'solution' && 'What does your app actually do?'}
+                </p>
+              </div>
             </div>
             {data.locked && <CheckCircle2 className="text-rose-500" size={32} strokeWidth={2.5} />}
           </div>

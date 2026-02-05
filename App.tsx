@@ -7,14 +7,15 @@ import { StageBox } from './components/StageBox';
 import { InstructionChip } from './components/InstructionChip';
 import { SparkMode } from './components/SparkMode';
 import { RocketShip } from './components/RocketShip';
-import { 
-  Rocket, 
-  Lock, 
-  RefreshCcw, 
-  Layout, 
-  Zap, 
-  Users, 
-  ClipboardCheck, 
+import { synthesizePrompt } from './services/geminiService';
+import {
+  Rocket,
+  Lock,
+  RefreshCcw,
+  Layout,
+  Zap,
+  Users,
+  ClipboardCheck,
   Copy,
   Plus,
   CheckCircle,
@@ -27,7 +28,8 @@ import {
   Settings2,
   Bell,
   Eye,
-  ZapIcon
+  ZapIcon,
+  Loader2
 } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'idea-launcher-state-red-v5';
@@ -68,6 +70,8 @@ const App: React.FC = () => {
     functionality: '',
     users: ''
   });
+  const [synthesizedPrompt, setSynthesizedPrompt] = useState<string | null>(null);
+  const [isSynthesizing, setIsSynthesizing] = useState(false);
 
   // Timer State
   const [timerSeconds, setTimerSeconds] = useState(0);
@@ -92,7 +96,7 @@ const App: React.FC = () => {
   // Nudge logic
   useEffect(() => {
     if (!isTimerActive) return;
-    
+
     if (timerSeconds === STAGE_TIMER_SECONDS) {
       setNudge("Struggle defined? Let's talk about The Crowd next!");
     } else if (timerSeconds === STAGE_TIMER_SECONDS * 2) {
@@ -106,6 +110,32 @@ const App: React.FC = () => {
       return () => clearTimeout(timer);
     }
   }, [timerSeconds, isTimerActive]);
+
+  // Synthesize prompt when entering final_review
+  useEffect(() => {
+    if (view === 'final_review' && !synthesizedPrompt && !isSynthesizing) {
+      const triggerSynthesis = async () => {
+        setIsSynthesizing(true);
+        const approved = state.instructions.filter(i => i.isApproved);
+        const designItems = approved.filter(i => i.category === 'design').map(i => i.text);
+        const functionalityItems = approved.filter(i => i.category === 'functionality').map(i => i.text);
+        const userItems = approved.filter(i => i.category === 'users').map(i => i.text);
+
+        const result = await synthesizePrompt(
+          state.stages.problem.text,
+          state.stages.people.text,
+          state.stages.solution.text,
+          designItems,
+          functionalityItems,
+          userItems
+        );
+        setSynthesizedPrompt(result.prompt);
+        setIsSynthesizing(false);
+      };
+
+      triggerSynthesis();
+    }
+  }, [view]);
 
   const updateStageText = (id: StageId, text: string) => {
     setState(prev => ({
@@ -173,6 +203,8 @@ const App: React.FC = () => {
     setNudge(null);
     setIsPromptApproved(false);
     setCustomInput({ design: '', functionality: '', users: '' });
+    setSynthesizedPrompt(null);
+    setIsSynthesizing(false);
   };
 
   const handleSparkSelect = (idea: string) => {
@@ -181,6 +213,12 @@ const App: React.FC = () => {
   };
 
   const generatePromptText = () => {
+    // If we have a synthesized prompt from Gemini 3 Pro, use that
+    if (synthesizedPrompt) {
+      return synthesizedPrompt;
+    }
+
+    // Otherwise, fall back to the basic template
     const approved = state.instructions.filter(i => i.isApproved);
     const design = approved.filter(i => i.category === 'design').map(i => `- ${i.text}`).join('\n');
     const func = approved.filter(i => i.category === 'functionality').map(i => `- ${i.text}`).join('\n');
@@ -388,7 +426,7 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
               </button>
               <div className="text-right">
                 <h2 className="text-5xl font-black text-slate-900 tracking-tight leading-none mb-3">Vibe Logic</h2>
-                <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.3em]">Picking The Implementation Nodes</p>
+                <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.3em]">Curate Your Design Pillars</p>
               </div>
             </div>
 
@@ -410,14 +448,17 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
 
             <div className="space-y-16">
               {[
-                { id: 'design', label: 'Visual Language', icon: <Layout className="text-rose-600" /> },
-                { id: 'functionality', label: 'Engine Capabilities', icon: <Zap className="text-slate-900" /> },
-                { id: 'users', label: 'Human Experience', icon: <Users className="text-rose-500" /> }
+                { id: 'design', label: 'Visual Language', icon: <Layout className="text-rose-600" />, description: 'Aesthetic, style, design direction' },
+                { id: 'functionality', label: 'Engine Capabilities', icon: <Zap className="text-slate-900" />, description: 'Core features, interactions, technical behaviors' },
+                { id: 'users', label: 'Human Experience', icon: <Users className="text-rose-500" />, description: 'How it feels to use, emotional outcomes, user satisfaction' }
               ].map(cat => (
                 <section key={cat.id} className="space-y-8">
-                  <div className="flex items-center gap-5">
-                    <div className="p-5 bg-white shadow-[0_12px_24px_rgba(0,0,0,0.05)] rounded-[1.5rem]">{cat.icon}</div>
-                    <h3 className="text-3xl font-black text-slate-800 tracking-tight">{cat.label}</h3>
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-5">
+                      <div className="p-5 bg-white shadow-[0_12px_24px_rgba(0,0,0,0.05)] rounded-[1.5rem]">{cat.icon}</div>
+                      <h3 className="text-3xl font-black text-slate-800 tracking-tight">{cat.label}</h3>
+                    </div>
+                    <p className="text-slate-500 text-sm font-medium ml-[76px] italic">{cat.description}</p>
                   </div>
                   
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -486,34 +527,77 @@ Build this using React and Tailwind CSS. Make it look high-class and vibe-code r
 
             <div className="bg-white rounded-[4rem] p-12 md:p-16 shadow-[0_40px_100px_rgba(0,0,0,0.08)] border border-rose-50 relative">
               <div className="absolute top-0 left-0 w-full h-3 bg-gradient-to-r from-rose-600 via-rose-400 to-rose-200" />
-              
+
               <div className="flex items-center gap-5 mb-12">
                 <div className="p-4 bg-rose-50 rounded-3xl">
                   <FileText className="text-rose-600" size={32} strokeWidth={2.5} />
                 </div>
                 <h3 className="text-2xl font-black text-slate-800 uppercase tracking-widest">Constructed Prompt</h3>
               </div>
-              
-              <div className="bg-slate-950 rounded-[2.5rem] p-10 text-rose-100 font-mono text-base leading-relaxed whitespace-pre-wrap shadow-inner min-h-[450px] border border-slate-800">
-                {generatePromptText()}
-              </div>
+
+              {isSynthesizing ? (
+                <div className="bg-slate-950 rounded-[2.5rem] p-10 text-rose-100 font-mono text-base leading-relaxed whitespace-pre-wrap shadow-inner min-h-[450px] border border-slate-800 flex items-center justify-center">
+                  <div className="flex flex-col items-center gap-4">
+                    <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+                      <Loader2 size={32} className="text-rose-400" strokeWidth={2} />
+                    </motion.div>
+                    <p className="text-rose-400 font-black uppercase tracking-widest text-sm">Synthesizing with Gemini 3 Pro...</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="bg-slate-950 rounded-[2.5rem] p-10 text-rose-100 font-mono text-base leading-relaxed whitespace-pre-wrap shadow-inner min-h-[450px] border border-slate-800">
+                  {generatePromptText()}
+                </div>
+              )}
 
               <div className="mt-12 flex flex-col items-center justify-center gap-8">
                 {!isPromptApproved ? (
-                  <div className="flex flex-col sm:flex-row gap-6 w-full justify-center">
+                  <div className="flex flex-col sm:flex-row gap-4 w-full justify-center flex-wrap">
                     <motion.button
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setView('approval')}
                       className="bg-slate-50 text-slate-500 px-12 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 uppercase tracking-widest text-xs hover:bg-slate-100 transition-all border border-slate-100"
                     >
-                      Refine Details <ArrowLeft size={20} />
+                      Back to Details <ArrowLeft size={20} />
                     </motion.button>
+                    {synthesizedPrompt && (
+                      <motion.button
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => {
+                          setSynthesizedPrompt(null);
+                          setTimeout(() => {
+                            setIsSynthesizing(true);
+                            const approved = state.instructions.filter(i => i.isApproved);
+                            const designItems = approved.filter(i => i.category === 'design').map(i => i.text);
+                            const functionalityItems = approved.filter(i => i.category === 'functionality').map(i => i.text);
+                            const userItems = approved.filter(i => i.category === 'users').map(i => i.text);
+                            synthesizePrompt(
+                              state.stages.problem.text,
+                              state.stages.people.text,
+                              state.stages.solution.text,
+                              designItems,
+                              functionalityItems,
+                              userItems
+                            ).then(result => {
+                              setSynthesizedPrompt(result.prompt);
+                              setIsSynthesizing(false);
+                            });
+                          }, 300);
+                        }}
+                        disabled={isSynthesizing}
+                        className="bg-slate-100 text-slate-600 px-12 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 uppercase tracking-widest text-xs hover:bg-slate-200 transition-all border border-slate-200 disabled:opacity-50"
+                      >
+                        <RefreshCcw size={16} /> Refine Prompt
+                      </motion.button>
+                    )}
                     <motion.button
                       whileHover={{ scale: 1.05, y: -4 }}
                       whileTap={{ scale: 0.95 }}
                       onClick={() => setIsPromptApproved(true)}
-                      className="glow-button bg-rose-600 text-white px-16 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(225,29,72,0.3)] uppercase tracking-[0.2em] text-xs"
+                      disabled={isSynthesizing}
+                      className="glow-button bg-rose-600 text-white px-16 py-6 rounded-[2.25rem] font-black flex items-center justify-center gap-4 shadow-[0_20px_40px_rgba(225,29,72,0.3)] uppercase tracking-[0.2em] text-xs disabled:opacity-50"
                     >
                       Confirm Build <ThumbsUp size={20} strokeWidth={3} />
                     </motion.button>
