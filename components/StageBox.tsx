@@ -1,9 +1,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { StageData } from '../types';
-import { STAGE_STARTERS, STAGE_FEEDBACK } from '../constants';
+import { STAGE_STARTERS, STAGE_FEEDBACK, STAGE_GUIDANCE } from '../constants';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, MessageCircle, Loader2, Sparkles, X } from 'lucide-react';
+import { CheckCircle2, Lock, Loader2, Sparkles, X, Plus, Lightbulb } from 'lucide-react';
 import { getSuggestions } from '../services/geminiService';
 
 interface StageBoxProps {
@@ -26,16 +26,29 @@ export const StageBox: React.FC<StageBoxProps> = ({
   const [feedbackKey, setFeedbackKey] = useState(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
+  const [showGuidance, setShowGuidance] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const starter = STAGE_STARTERS[data.id] || '';
+  const guidance = STAGE_GUIDANCE[data.id] || [];
 
-  // Minimum character threshold before suggestion button is available
-  const MIN_CHAR_COUNT = 30;
+  // Minimum character threshold before AI feedback button is available
+  const MIN_CHAR_COUNT = 50;
+
+  // Stage number for display
+  const stageNumber = data.id === 'why' ? 1 : data.id === 'who' ? 2 : data.id === 'what' ? 3 : 4;
+
+  // Stage descriptions
+  const stageDescriptions: Record<string, string> = {
+    why: 'Why does this app need to exist?',
+    who: 'Who will use this app?',
+    what: 'What does the app do?',
+    how: 'How does it work?'
+  };
 
   // Update prompt index based on text length
   useEffect(() => {
-    if (data.text.length > 60) setCurrentPromptIndex(2);
-    else if (data.text.length > 30) setCurrentPromptIndex(1);
+    if (data.text.length > 100) setCurrentPromptIndex(2);
+    else if (data.text.length > 50) setCurrentPromptIndex(1);
     else setCurrentPromptIndex(0);
   }, [data.text]);
 
@@ -52,11 +65,23 @@ export const StageBox: React.FC<StageBoxProps> = ({
     }
   };
 
+  const appendSuggestion = (suggestion: string) => {
+    const newText = data.text.trim() + '\n\n' + suggestion;
+    onUpdate(newText);
+    // Remove the suggestion from the list
+    setSuggestions(prev => prev.filter(s => s !== suggestion));
+  };
+
+  const dismissSuggestion = (index: number) => {
+    setSuggestions(prev => prev.filter((_, i) => i !== index));
+  };
+
   const closeSuggestions = () => {
     setSuggestions([]);
   };
 
   const handleFocus = () => {
+    setShowGuidance(true);
     if (data.text === '') {
       onUpdate(starter);
       setTimeout(() => {
@@ -69,7 +94,7 @@ export const StageBox: React.FC<StageBoxProps> = ({
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
       const rules = STAGE_FEEDBACK[data.id]?.checks || [];
       const failedCheck = rules.find(rule => rule.test(data.text));
       if (failedCheck) {
@@ -89,9 +114,10 @@ export const StageBox: React.FC<StageBoxProps> = ({
   }, [feedback, feedbackKey]);
 
   return (
-    <div className="relative mb-10 last:mb-0">
+    <div className="relative mb-6 last:mb-0">
+      {/* Guidance panel - shows on left when active (desktop only) */}
       <AnimatePresence>
-        {isActive && !data.locked && (
+        {isActive && !data.locked && showGuidance && (
           <motion.div
             initial={{ opacity: 0, scale: 0.8, x: 20 }}
             animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -100,13 +126,18 @@ export const StageBox: React.FC<StageBoxProps> = ({
           >
             <div className="glass-card p-6 rounded-[2rem] shadow-[0_32px_64px_-12px_rgba(225,29,72,0.12)] border border-rose-100 relative">
               <div className="absolute top-10 -right-2 w-4 h-4 glass-card border-t border-r border-rose-100 rotate-45" />
-              <div className="flex items-center gap-2 text-rose-500 mb-2">
-                <MessageCircle size={20} className="shrink-0" strokeWidth={2.5} />
+              <div className="flex items-center gap-2 text-rose-500 mb-3">
+                <Lightbulb size={18} className="shrink-0" strokeWidth={2.5} />
                 <span className="text-[10px] font-black uppercase tracking-[0.25em]">Think about</span>
               </div>
-              <p className="text-sm text-slate-800 leading-relaxed font-semibold italic">
-                "{data.prompts[currentPromptIndex]}"
-              </p>
+              <ul className="space-y-3">
+                {guidance.map((prompt, index) => (
+                  <li key={index} className="text-sm text-slate-700 leading-relaxed flex gap-2">
+                    <span className="text-rose-400 font-bold shrink-0">•</span>
+                    <span>{prompt}</span>
+                  </li>
+                ))}
+              </ul>
             </div>
           </motion.div>
         )}
@@ -117,28 +148,26 @@ export const StageBox: React.FC<StageBoxProps> = ({
         onClick={!data.locked ? onActivate : undefined}
         className={`
           cursor-pointer rounded-[2.5rem] transition-all duration-700 border-2
-          ${data.locked 
-            ? 'bg-rose-50/20 border-rose-100/50 opacity-90' 
-            : isActive 
-              ? 'bg-white border-rose-500 shadow-[0_40px_80px_-15px_rgba(225,29,72,0.18)] ring-[12px] ring-rose-50/40' 
+          ${data.locked
+            ? 'bg-rose-50/20 border-rose-100/50 opacity-90'
+            : isActive
+              ? 'bg-white border-rose-500 shadow-[0_40px_80px_-15px_rgba(225,29,72,0.18)] ring-[12px] ring-rose-50/40'
               : 'bg-white border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.02)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.06)] hover:border-rose-200'
           }
         `}
       >
-        <div className="p-10">
+        <div className="p-8 md:p-10">
           <div className="flex justify-between items-center mb-6">
             <div className="flex items-center gap-4 flex-1">
-              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-xs uppercase tracking-tighter ${data.locked ? 'bg-slate-100 text-slate-400' : 'bg-rose-100 text-rose-600'}`}>
-                {data.id === 'problem' ? '1' : data.id === 'people' ? '2' : '3'}
+              <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-black text-sm ${data.locked ? 'bg-rose-100 text-rose-500' : 'bg-rose-100 text-rose-600'}`}>
+                {stageNumber}
               </div>
               <div className="flex-1">
                 <h3 className={`text-2xl font-black tracking-tight ${data.locked ? 'text-slate-400' : 'text-slate-900'}`}>
                   {data.label}
                 </h3>
                 <p className={`text-xs mt-1 ${data.locked ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {data.id === 'problem' && 'What is the pain point people face?'}
-                  {data.id === 'people' && 'Who are you building this for?'}
-                  {data.id === 'solution' && 'What does your app actually do?'}
+                  {stageDescriptions[data.id]}
                 </p>
               </div>
             </div>
@@ -153,12 +182,30 @@ export const StageBox: React.FC<StageBoxProps> = ({
                 exit={{ opacity: 0, height: 0 }}
                 className="space-y-4"
               >
+                {/* Mobile guidance - shows above textarea on small screens */}
+                {showGuidance && (
+                  <div className="xl:hidden bg-rose-50 rounded-2xl p-4 border border-rose-100">
+                    <div className="flex items-center gap-2 text-rose-600 mb-2">
+                      <Lightbulb size={16} strokeWidth={2.5} />
+                      <span className="text-[10px] font-black uppercase tracking-[0.2em]">Think about</span>
+                    </div>
+                    <ul className="space-y-1.5">
+                      {guidance.map((prompt, index) => (
+                        <li key={index} className="text-xs text-slate-600 flex gap-2">
+                          <span className="text-rose-400">•</span>
+                          <span>{prompt}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 <textarea
                   ref={textareaRef}
                   autoFocus
                   onFocus={handleFocus}
                   onKeyDown={handleKeyDown}
-                  className="w-full h-48 p-8 bg-slate-50/50 rounded-3xl border border-slate-100 focus:border-rose-300 focus:ring-0 text-slate-900 placeholder:text-slate-300 resize-none transition-all font-medium leading-relaxed text-lg"
+                  className="w-full h-40 p-6 bg-slate-50/50 rounded-2xl border border-slate-100 focus:border-rose-300 focus:ring-0 text-slate-900 placeholder:text-slate-300 resize-none transition-all font-medium leading-relaxed text-base"
                   placeholder={starter}
                   value={data.text}
                   onChange={(e) => onUpdate(e.target.value)}
@@ -172,11 +219,7 @@ export const StageBox: React.FC<StageBoxProps> = ({
                       initial={{ opacity: 0, y: -8 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -8 }}
-                      className={`rounded-2xl px-5 py-3 text-sm font-semibold ${
-                        feedback.startsWith('⚠️')
-                          ? 'bg-amber-50 border border-amber-200 text-amber-800'
-                          : 'bg-rose-50 border border-rose-100 text-rose-700'
-                      }`}
+                      className="rounded-2xl px-5 py-3 text-sm font-semibold bg-rose-50 border border-rose-100 text-rose-700"
                     >
                       {feedback}
                     </motion.div>
@@ -191,7 +234,7 @@ export const StageBox: React.FC<StageBoxProps> = ({
                       </span>
                     ) : (
                       <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
-                        Keep refining or get suggestions
+                        Looking good! Get AI feedback or lock it in
                       </span>
                     )}
                   </div>
@@ -206,54 +249,74 @@ export const StageBox: React.FC<StageBoxProps> = ({
                         handleGetSuggestions();
                       }}
                       disabled={isLoadingSuggestions}
-                      className="flex items-center gap-3 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-400 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_15px_30px_-5px_rgba(225,29,72,0.4)] transition-all"
+                      className="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 disabled:bg-slate-100 text-slate-700 px-5 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all"
                     >
                       {isLoadingSuggestions ? (
                         <>
-                          <Loader2 size={16} strokeWidth={3} className="animate-spin" />
+                          <Loader2 size={14} strokeWidth={3} className="animate-spin" />
                           Thinking...
                         </>
                       ) : (
                         <>
-                          <Sparkles size={16} strokeWidth={3} />
-                          Suggestions
+                          <Sparkles size={14} strokeWidth={3} />
+                          Get AI Feedback
                         </>
                       )}
                     </motion.button>
                   )}
                 </div>
 
+                {/* AI Suggestions panel */}
                 <AnimatePresence>
                   {suggestions.length > 0 && (
                     <motion.div
                       initial={{ opacity: 0, y: -12 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -12 }}
-                      className="bg-rose-50 border border-rose-200 rounded-2xl p-6 space-y-3"
+                      className="bg-gradient-to-br from-rose-50 to-white border border-rose-200 rounded-2xl p-5 space-y-4"
                     >
                       <div className="flex justify-between items-start">
-                        <h4 className="text-sm font-black text-rose-700 uppercase tracking-wide">
-                          Suggestions from Gemini
-                        </h4>
+                        <div className="flex items-center gap-2">
+                          <Sparkles size={16} className="text-rose-500" />
+                          <h4 className="text-sm font-black text-rose-700 uppercase tracking-wide">
+                            AI Suggestions
+                          </h4>
+                        </div>
                         <button
                           onClick={closeSuggestions}
-                          className="text-rose-400 hover:text-rose-600 transition-colors"
+                          className="text-rose-400 hover:text-rose-600 transition-colors p-1"
                         >
                           <X size={18} strokeWidth={3} />
                         </button>
                       </div>
-                      <ul className="space-y-2">
+                      <div className="space-y-3">
                         {suggestions.map((suggestion, index) => (
-                          <li key={index} className="flex gap-3">
-                            <span className="text-rose-500 font-bold shrink-0 text-sm">
-                              {index + 1}.
-                            </span>
-                            <span className="text-slate-700 text-sm leading-relaxed">
+                          <div
+                            key={index}
+                            className="bg-white rounded-xl p-4 border border-rose-100 flex gap-3 items-start"
+                          >
+                            <span className="text-slate-700 text-sm leading-relaxed flex-1">
                               {suggestion}
                             </span>
-                          </li>
+                            <div className="flex gap-2 shrink-0">
+                              <button
+                                onClick={() => appendSuggestion(suggestion)}
+                                className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors"
+                                title="Add to your answer"
+                              >
+                                <Plus size={16} strokeWidth={3} />
+                              </button>
+                              <button
+                                onClick={() => dismissSuggestion(index)}
+                                className="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-lg transition-colors"
+                                title="Dismiss"
+                              >
+                                <X size={16} strokeWidth={3} />
+                              </button>
+                            </div>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
@@ -261,23 +324,30 @@ export const StageBox: React.FC<StageBoxProps> = ({
                 <motion.button
                   initial={{ scale: 0.9, opacity: 0, y: 10 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
-                  whileHover={{ scale: 1.05, y: -2 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.02, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
                   onClick={(e) => {
                     e.stopPropagation();
                     onReadyToLock();
                   }}
-                  className="glow-button w-full flex items-center justify-center gap-3 bg-rose-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_15px_30px_-5px_rgba(225,29,72,0.4)] transition-all"
+                  className="glow-button w-full flex items-center justify-center gap-3 bg-rose-600 hover:bg-rose-700 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_15px_30px_-5px_rgba(225,29,72,0.4)] transition-all"
                 >
                   Lock it in <Lock size={16} strokeWidth={3} />
                 </motion.button>
               </motion.div>
             ) : !data.locked && (
-              <div className="text-slate-400 text-base font-medium line-clamp-1 italic px-2 opacity-60">
+              <div className="text-slate-400 text-base font-medium line-clamp-2 italic px-2 opacity-60">
                 {data.text || "Tap to start writing..."}
               </div>
             )}
           </AnimatePresence>
+
+          {/* Show locked text */}
+          {data.locked && (
+            <div className="text-slate-600 text-base font-medium leading-relaxed italic">
+              "{data.text}"
+            </div>
+          )}
         </div>
       </motion.div>
     </div>

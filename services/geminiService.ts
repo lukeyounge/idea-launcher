@@ -1,10 +1,4 @@
-import { StageId } from '../types';
-
-interface ValidationResponse {
-  isValid: boolean;
-  feedbackMessage: string;
-  confidence: number;
-}
+import { StageId, POWER_SKILLS } from '../types';
 
 interface SuggestionResponse {
   suggestions: string[];
@@ -14,34 +8,81 @@ interface PromptSynthesisResponse {
   prompt: string;
 }
 
+// Power Skills context to include in final prompts
+const POWER_SKILLS_CONTEXT = `## SBF Power Skills Context
+
+This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 9 Power Skills that students develop:
+
+1. **Analytical Thinking** - Breaking down complex problems and making data-driven decisions
+2. **Agility** - Adapting quickly to change and being comfortable with uncertainty
+3. **Critical Thinking** - Evaluating information objectively and making reasoned judgments
+4. **Communicating with Impact** - Expressing ideas clearly and persuasively
+5. **Financial Literacy** - Understanding and managing personal and business finances
+6. **Goal Driven** - Setting and pursuing meaningful objectives with determination
+7. **Innovation** - Creating new ideas and approaches to solve problems
+8. **Collaborative Relationships** - Building and maintaining productive partnerships
+9. **Self-Management** - Taking responsibility for personal growth and development
+
+The app should reference these specific Power Skills where relevant, and help users develop or assess these skills.`;
+
 const SUGGESTION_PROMPTS: Record<StageId, string> = {
-  problem: `The user is defining THE STRUGGLE - the specific pain point or problem they want to solve.
+  why: `You're helping a teenager (14-17 years old) build an app about Power Skills.
 
-Their description: "[USER_TEXT]"
+They're explaining WHY their app should exist. Here's what they wrote:
+"[USER_TEXT]"
 
-Give ONE coaching tip (max 20 words) to deepen their pain point articulation. Do NOT suggest audience info.
+Give ONE friendly tip (max 25 words) to help them think deeper about why this matters.
 
-Focus on: the specific behavior causing pain, emotional/practical consequence, why it matters, or how intense it is.
+IMPORTANT: Write like you're chatting with a teen - casual, encouraging, no jargon. Use "you" and "your".
 
-Format exactly: "1. [your tip]"`,
-
-  people: `The user is defining THE CROWD - their specific target audience/users.
-
-Their description: "[USER_TEXT]"
-
-Give ONE coaching tip (max 20 words) to make their audience more concrete. Do NOT suggest changes to the problem.
-
-Focus on: replacing vague terms with specifics, adding details (age/job/life stage), what they share, or their constraints.
+Example good responses:
+- "Nice start! What's the moment that made you think 'someone should fix this'?"
+- "Love it! Can you add what makes this problem really annoying for people?"
 
 Format exactly: "1. [your tip]"`,
 
-  solution: `The user is defining THE BIG IDEA - what their app actually does.
+  who: `You're helping a teenager (14-17 years old) build an app about Power Skills.
 
-Their description: "[USER_TEXT]"
+They're describing WHO will use their app. Here's what they wrote:
+"[USER_TEXT]"
 
-Give ONE coaching tip (max 20 words) to make their solution clearer and more buildable. Do NOT suggest problem or audience changes.
+Give ONE friendly tip (max 25 words) to help them picture their users more clearly.
 
-Focus on: the core user action, what users see, the main feature, or how it solves the pain point.
+IMPORTANT: Write like you're chatting with a teen - casual, encouraging, no jargon. Use "you" and "your".
+
+Example good responses:
+- "Cool! Are these people more like your age or younger/older? That changes everything!"
+- "Nice! What's a typical day like for these people? What stresses them out?"
+
+Format exactly: "1. [your tip]"`,
+
+  what: `You're helping a teenager (14-17 years old) build an app about Power Skills.
+
+They're explaining WHAT their app does. Here's what they wrote:
+"[USER_TEXT]"
+
+Give ONE friendly tip (max 25 words) to help them describe it more clearly.
+
+IMPORTANT: Write like you're chatting with a teen - casual, encouraging, no jargon. Use "you" and "your".
+
+Example good responses:
+- "Sounds cool! When someone opens your app, what's the first thing they see?"
+- "Love the idea! What's the ONE main thing users actually do in your app?"
+
+Format exactly: "1. [your tip]"`,
+
+  how: `You're helping a teenager (14-17 years old) build an app about Power Skills.
+
+They're explaining HOW their app works. Here's what they wrote:
+"[USER_TEXT]"
+
+Give ONE friendly tip (max 25 words) to help them think through the experience.
+
+IMPORTANT: Write like you're chatting with a teen - casual, encouraging, no jargon. Use "you" and "your".
+
+Example good responses:
+- "Nice! Walk me through it - what happens after someone taps the first button?"
+- "Cool idea! What makes people want to come back and use it again?"
 
 Format exactly: "1. [your tip]"`,
 };
@@ -62,7 +103,7 @@ export async function getSuggestions(
     const prompt = SUGGESTION_PROMPTS[stageId].replace('[USER_TEXT]', text);
 
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=' +
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
         apiKey,
       {
         method: 'POST',
@@ -131,9 +172,11 @@ export async function getSuggestions(
 }
 
 export async function synthesizePrompt(
-  struggle: string,
-  crowd: string,
-  solution: string,
+  appName: string,
+  why: string,
+  who: string,
+  what: string,
+  how: string,
   designItems: string[],
   functionalityItems: string[],
   userItems: string[]
@@ -143,37 +186,43 @@ export async function synthesizePrompt(
     if (!apiKey) {
       console.error('Gemini API key not configured');
       return {
-        prompt: generateFallbackPrompt(struggle, crowd, solution, designItems, functionalityItems, userItems),
+        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
       };
     }
 
-    const synthesisProp = `You are a world-class prompt engineer specializing in vibe-coding briefs for Claude.
+    const synthesisProp = `You are a world-class prompt engineer specializing in vibe-coding briefs for Google AI Studio.
 
-The user has defined their app idea:
-- Struggle/Problem: "${struggle}"
-- Target Crowd: "${crowd}"
-- Solution/Big Idea: "${solution}"
+${POWER_SKILLS_CONTEXT}
 
-They've also selected these implementation pillars:
-Visual Language: ${designItems.length > 0 ? designItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
-Engine Capabilities: ${functionalityItems.length > 0 ? functionalityItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
-Human Experience: ${userItems.length > 0 ? userItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
+The user is building a Power Skills app called "${appName}":
+- WHY (Purpose): "${why}"
+- WHO (Target Users): "${who}"
+- WHAT (Core Function): "${what}"
+- HOW (Experience): "${how}"
+
+They've also selected these implementation details:
+Visual Design: ${designItems.length > 0 ? designItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
+Functionality: ${functionalityItems.length > 0 ? functionalityItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
+User Experience: ${userItems.length > 0 ? userItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 
 Create an excellent, specific vibe-coding prompt that:
-1. Opens with a clear problem statement (the user's struggle)
-2. Defines the target user (the crowd)
-3. Articulates the solution (what the app does)
-4. Lists specific visual design requirements (VISUAL VIBE section)
-5. Lists specific functionality requirements (HOW IT WORKS section)
-6. Lists specific experience requirements (USER FEELINGS section)
-7. Ends with clear instructions to build with React and Tailwind CSS
+1. MUST include the full Power Skills context (all 9 skills with descriptions) at the start so the AI knows what Power Skills are
+2. Opens with the app name and purpose
+3. Defines who it's for
+4. Describes what it does and how it works
+5. Lists visual design requirements (VISUAL VIBE section)
+6. Lists functionality requirements (HOW IT WORKS section)
+7. Lists user experience requirements (USER FEELINGS section)
+8. Ends with instructions to build with React and Tailwind CSS
 
-The prompt should be detailed, specific, and immediately actionable for a vibe-coding session. Each requirement should be concrete and buildable.
+CRITICAL: The Power Skills list MUST be included in the output prompt so that Google AI Studio knows these specific skills.
 
-Output ONLY the prompt text, ready to copy and paste into Claude's AI Studio. Do not include explanations or markdown formatting.`;
+The prompt should be detailed, specific, and immediately actionable for a vibe-coding session.
+
+Output ONLY the prompt text, ready to copy and paste into Google AI Studio. Do not include explanations or markdown code blocks.`;
 
     const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-preview:generateContent?key=' +
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
         apiKey,
       {
         method: 'POST',
@@ -192,7 +241,7 @@ Output ONLY the prompt text, ready to copy and paste into Claude's AI Studio. Do
           ],
           generationConfig: {
             temperature: 0.8,
-            maxOutputTokens: 2000,
+            maxOutputTokens: 3000,
           },
         }),
       }
@@ -201,7 +250,7 @@ Output ONLY the prompt text, ready to copy and paste into Claude's AI Studio. Do
     if (!response.ok) {
       console.error('Gemini synthesis API error:', response.statusText);
       return {
-        prompt: generateFallbackPrompt(struggle, crowd, solution, designItems, functionalityItems, userItems),
+        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
       };
     }
 
@@ -210,7 +259,7 @@ Output ONLY the prompt text, ready to copy and paste into Claude's AI Studio. Do
 
     if (!synthesized) {
       return {
-        prompt: generateFallbackPrompt(struggle, crowd, solution, designItems, functionalityItems, userItems),
+        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
       };
     }
 
@@ -220,31 +269,65 @@ Output ONLY the prompt text, ready to copy and paste into Claude's AI Studio. Do
   } catch (error) {
     console.error('Prompt synthesis error:', error);
     return {
-      prompt: generateFallbackPrompt(struggle, crowd, solution, designItems, functionalityItems, userItems),
+      prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems),
     };
   }
 }
 
 function generateFallbackPrompt(
-  struggle: string,
-  crowd: string,
-  solution: string,
+  appName: string,
+  why: string,
+  who: string,
+  what: string,
+  how: string,
   designItems: string[],
   functionalityItems: string[],
   userItems: string[]
 ): string {
-  return `I want to build an app that fixes this struggle: "${struggle}"
-For this crowd: "${crowd}"
-The big fix: "${solution}"
+  const powerSkillsList = POWER_SKILLS.map((skill, i) => `${i + 1}. ${skill}`).join('\n');
 
-VISUAL VIBE:
-${designItems.length > 0 ? designItems.map(item => `- ${item}`).join('\n') : '- Premium, clean aesthetic'}
+  return `# Build "${appName}" - A Power Skills App
 
-HOW IT WORKS:
-${functionalityItems.length > 0 ? functionalityItems.map(item => `- ${item}`).join('\n') : '- Smooth, interactive features'}
+## SBF Power Skills Context
 
-USER FEELINGS:
-${userItems.length > 0 ? userItems.map(item => `- ${item}`).join('\n') : '- Designed specifically for the crowd mentioned above'}
+This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 9 Power Skills:
 
-Build this using React and Tailwind CSS. Make it look high-class and vibe-code ready.`;
+${powerSkillsList}
+
+The app should reference these specific Power Skills where relevant.
+
+---
+
+## The App
+
+**App Name:** ${appName}
+
+**WHY this app exists:**
+${why}
+
+**WHO it's for:**
+${who}
+
+**WHAT it does:**
+${what}
+
+**HOW it works:**
+${how}
+
+---
+
+## Design Requirements
+
+### VISUAL VIBE
+${designItems.length > 0 ? designItems.map(item => `- ${item}`).join('\n') : '- Clean, modern design\n- Mobile-friendly layout'}
+
+### HOW IT WORKS
+${functionalityItems.length > 0 ? functionalityItems.map(item => `- ${item}`).join('\n') : '- Smooth, intuitive interactions\n- Clear feedback on actions'}
+
+### USER FEELINGS
+${userItems.length > 0 ? userItems.map(item => `- ${item}`).join('\n') : '- Encouraging and supportive\n- Celebrates progress'}
+
+---
+
+Build this using React and Tailwind CSS. Make it look modern, engaging, and appropriate for students developing their Power Skills.`;
 }
