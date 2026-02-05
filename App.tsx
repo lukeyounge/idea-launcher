@@ -142,7 +142,13 @@ const App: React.FC = () => {
 
   const allStagesLocked = state.stages.why.locked && state.stages.who.locked && state.stages.what.locked && state.stages.how.locked;
   const approvedCount = state.instructions.filter(i => i.isApproved).length;
-  const canProgressToReview = approvedCount >= 3 && state.appName.trim().length > 0;
+  const approvedByCategory = {
+    design: state.instructions.some(i => i.isApproved && i.category === 'design'),
+    functionality: state.instructions.some(i => i.isApproved && i.category === 'functionality'),
+    users: state.instructions.some(i => i.isApproved && i.category === 'users'),
+  };
+  const allCategoriesCovered = approvedByCategory.design && approvedByCategory.functionality && approvedByCategory.users;
+  const canProgressToReview = allCategoriesCovered && state.appName.trim().length > 0;
 
   const handleReset = () => {
     setState({
@@ -443,7 +449,7 @@ const App: React.FC = () => {
                       <div className="hidden sm:flex flex-col">
                         <span className="text-[10px] font-black uppercase tracking-[0.25em]">Details Selected</span>
                         <span className="text-sm font-black">
-                          {!state.appName.trim() ? 'Add a name first' : canProgressToReview ? 'Ready to synthesize!' : `Select ${Math.max(0, 3 - approvedCount)} more`}
+                          {!state.appName.trim() ? 'Add a name first' : canProgressToReview ? 'Ready to synthesize!' : `Pick from: ${[!approvedByCategory.design && 'Look', !approvedByCategory.functionality && 'Features', !approvedByCategory.users && 'Feel'].filter(Boolean).join(', ')}`}
                         </span>
                       </div>
                     </div>

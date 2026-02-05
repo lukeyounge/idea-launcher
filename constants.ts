@@ -137,11 +137,11 @@ export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [
   { category: 'design', text: 'Mobile-first design that works on phones' },
 
   // Functionality - What should it be able to do?
-  { category: 'functionality', text: 'Quick progress feedback after each action' },
-  { category: 'functionality', text: 'Personalised experience based on user input' },
-  { category: 'functionality', text: 'Gamification elements (points, badges, streaks)' },
-  { category: 'functionality', text: 'Share results with friends or mentors' },
-  { category: 'functionality', text: 'Save progress and pick up later' },
+  { category: 'functionality', text: 'Tells you how you\'re doing as you go' },
+  { category: 'functionality', text: 'Changes based on your answers' },
+  { category: 'functionality', text: 'Earns you points, badges, or streaks' },
+  { category: 'functionality', text: 'Lets you share results with friends' },
+  { category: 'functionality', text: 'Saves where you left off' },
 
   // Users - How should it make people feel?
   { category: 'users', text: 'Feels encouraging, not judgmental' },
