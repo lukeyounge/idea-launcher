@@ -130,11 +130,11 @@ export const STAGE_FEEDBACK: Record<string, { checks: { test: (text: string) => 
 };
 
 export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [
-  // Design - Let's think about how it looks
-  { category: 'design', text: 'Clean, modern look that feels professional' },
-  { category: 'design', text: 'Fun colours and friendly animations' },
-  { category: 'design', text: 'Easy to navigate with clear buttons' },
-  { category: 'design', text: 'Mobile-first design that works on phones' },
+  // Design - What should it look like?
+  { category: 'design', text: 'Clean and modern looking' },
+  { category: 'design', text: 'Fun colours and animations' },
+  { category: 'design', text: 'Simple to navigate' },
+  { category: 'design', text: 'Looks great on phones' },
 
   // Functionality - What should it be able to do?
   { category: 'functionality', text: 'Tells you how you\'re doing as you go' },
@@ -143,9 +143,9 @@ export const DEFAULT_INSTRUCTIONS: Omit<Instruction, 'id' | 'isApproved'>[] = [
   { category: 'functionality', text: 'Lets you share results with friends' },
   { category: 'functionality', text: 'Saves where you left off' },
 
-  // Users - How should it make people feel?
-  { category: 'users', text: 'Feels encouraging, not judgmental' },
-  { category: 'users', text: 'Quick sessions (5-10 minutes max)' },
-  { category: 'users', text: 'Gives actionable advice, not just theory' },
-  { category: 'users', text: 'Celebrates small wins and progress' }
+  // Users - How should it feel to use?
+  { category: 'users', text: 'Feels friendly and encouraging' },
+  { category: 'users', text: 'Quick to use — not a big time commitment' },
+  { category: 'users', text: 'Gives you real tips, not just info' },
+  { category: 'users', text: 'Makes you want to come back' }
 ];

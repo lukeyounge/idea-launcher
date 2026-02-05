@@ -20,7 +20,8 @@ import {
   FileText,
   Copy,
   Loader2,
-  Pencil
+  Pencil,
+  CheckCircle2
 } from 'lucide-react';
 
 const LOCAL_STORAGE_KEY = 'idea-launcher-power-skills-v1';
@@ -224,9 +225,9 @@ const App: React.FC = () => {
 
   // Section headings for the details view
   const SECTION_CONFIG = [
-    { id: 'design', label: "Let's think about how it looks", icon: <Layout className="text-rose-600" size={24} />, description: 'Visual style, colours, and layout' },
-    { id: 'functionality', label: "What should it be able to do?", icon: <Zap className="text-slate-900" size={24} />, description: 'Core features and interactions' },
-    { id: 'users', label: "How should it make people feel?", icon: <Heart className="text-rose-500" size={24} />, description: 'The emotional experience' }
+    { id: 'design', label: "What should it look like?", icon: <Layout className="text-rose-600" size={24} />, description: 'The vibe, colours, and style of your app' },
+    { id: 'functionality', label: "What should it do?", icon: <Zap className="text-slate-900" size={24} />, description: 'The features people will actually use' },
+    { id: 'users', label: "How should it feel to use?", icon: <Heart className="text-rose-500" size={24} />, description: 'The experience someone has when they open it' }
   ];
 
   return (
@@ -354,24 +355,29 @@ const App: React.FC = () => {
                     Back
                   </button>
                   <div className="text-right">
-                    <h2 className="text-4xl font-black text-slate-900 tracking-tight leading-none mb-2">Add the Details</h2>
-                    <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.3em]">Name it & customize</p>
+                    <h2 className="text-4xl font-black text-slate-900 tracking-tight leading-none mb-2">Make it yours</h2>
+                    <p className="text-slate-400 font-bold text-xs uppercase tracking-[0.3em]">Name it & pick the details</p>
                   </div>
                 </div>
 
                 {/* Locked Foundations Recap */}
-                <section className="glass-card rounded-[2.5rem] p-2 border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)]">
-                  <div className="flex items-center gap-4 px-8 py-4">
-                    <div className="w-2 h-2 rounded-full bg-rose-500" />
-                    <h3 className="text-xs font-black uppercase tracking-[0.3em] text-slate-400">Your Idea Foundation</h3>
+                <section className="glass-card rounded-[2.5rem] p-6 border border-white shadow-[0_20px_50px_rgba(0,0,0,0.04)]">
+                  <div className="flex items-center gap-4 px-4 pb-4">
+                    <div className="p-3 bg-white shadow-lg rounded-2xl">
+                      <CheckCircle2 className="text-emerald-500" size={22} />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-black text-slate-800">Here's what you said</h3>
+                      <p className="text-slate-400 text-xs font-bold uppercase tracking-[0.2em]">Your locked-in ideas from before</p>
+                    </div>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {(['why', 'who', 'what', 'how'] as StageId[]).map(stageId => {
                       const stage = state.stages[stageId];
                       return (
                         <div key={stage.id} className="bg-white p-6 rounded-[2rem] shadow-[0_8px_24px_rgba(0,0,0,0.02)] flex flex-col">
                           <h4 className="text-[10px] font-black uppercase text-rose-500 tracking-[0.3em] mb-2">{stage.label}</h4>
-                          <p className="text-slate-700 text-sm font-medium leading-relaxed line-clamp-3">"{stage.text}"</p>
+                          <p className="text-slate-700 text-sm font-medium leading-relaxed">"{stage.text}"</p>
                         </div>
                       );
                     })}
@@ -385,8 +391,8 @@ const App: React.FC = () => {
                       <Pencil className="text-rose-600" size={24} />
                     </div>
                     <div>
-                      <h3 className="text-2xl font-black text-slate-800">Give it a name</h3>
-                      <p className="text-slate-500 text-sm">What should we call your Power Skills app?</p>
+                      <h3 className="text-2xl font-black text-slate-800">What's it called?</h3>
+                      <p className="text-slate-500 text-sm">Give your app a name — something catchy works best</p>
                     </div>
                   </div>
                   <input
