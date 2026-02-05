@@ -11,17 +11,16 @@ interface PromptSynthesisResponse {
 // Power Skills context to include in final prompts
 const POWER_SKILLS_CONTEXT = `## SBF Power Skills Context
 
-This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 9 Power Skills that students develop:
+This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 8 Power Skills that students develop:
 
-1. **Analytical Thinking** - Breaking down complex problems and making data-driven decisions
-2. **Agility** - Adapting quickly to change and being comfortable with uncertainty
-3. **Critical Thinking** - Evaluating information objectively and making reasoned judgments
-4. **Communicating with Impact** - Expressing ideas clearly and persuasively
-5. **Financial Literacy** - Understanding and managing personal and business finances
-6. **Goal Driven** - Setting and pursuing meaningful objectives with determination
-7. **Innovation** - Creating new ideas and approaches to solve problems
-8. **Collaborative Relationships** - Building and maintaining productive partnerships
-9. **Self-Management** - Taking responsibility for personal growth and development
+1. **Agility** – Staying positive and adapting quickly when things change or don't go as planned.
+2. **Analytical Thinking** – Breaking down information, spotting patterns, and solving problems using what matters most.
+3. **Collaborative Relationships** – Working well with different people, communicating clearly, and building win-win outcomes.
+4. **Critical Thinking** – Asking good questions, evaluating information, reflecting, and making better decisions.
+5. **Financial Literacy** – Managing money wisely, balancing needs and wants, and working towards financial goals.
+6. **Goal-Driven** – Setting challenging goals, taking responsibility, and staying accountable through obstacles.
+7. **Innovative Thinking** – Trying creative solutions, taking smart risks, and challenging the usual way of doing things.
+8. **Self-Management** – Regulating emotions, building resilience, knowing your strengths, and staying open to lifelong learning.
 
 The app should reference these specific Power Skills where relevant, and help users develop or assess these skills.`;
 
@@ -284,15 +283,22 @@ function generateFallbackPrompt(
   functionalityItems: string[],
   userItems: string[]
 ): string {
-  const powerSkillsList = POWER_SKILLS.map((skill, i) => `${i + 1}. ${skill}`).join('\n');
+  const powerSkillsWithDescriptions = `1. **Agility** – Staying positive and adapting quickly when things change or don't go as planned.
+2. **Analytical Thinking** – Breaking down information, spotting patterns, and solving problems using what matters most.
+3. **Collaborative Relationships** – Working well with different people, communicating clearly, and building win-win outcomes.
+4. **Critical Thinking** – Asking good questions, evaluating information, reflecting, and making better decisions.
+5. **Financial Literacy** – Managing money wisely, balancing needs and wants, and working towards financial goals.
+6. **Goal-Driven** – Setting challenging goals, taking responsibility, and staying accountable through obstacles.
+7. **Innovative Thinking** – Trying creative solutions, taking smart risks, and challenging the usual way of doing things.
+8. **Self-Management** – Regulating emotions, building resilience, knowing your strengths, and staying open to lifelong learning.`;
 
   return `# Build "${appName}" - A Power Skills App
 
 ## SBF Power Skills Context
 
-This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 9 Power Skills:
+This app is designed around the Students for a Better Future (SBF) Power Skills framework. These are the 8 Power Skills:
 
-${powerSkillsList}
+${powerSkillsWithDescriptions}
 
 The app should reference these specific Power Skills where relevant.
 

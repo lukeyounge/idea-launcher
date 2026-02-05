@@ -33,14 +33,13 @@ export interface AppState {
 }
 
 export const POWER_SKILLS = [
-  'Analytical Thinking',
   'Agility',
-  'Critical Thinking',
-  'Communicating with Impact',
-  'Financial Literacy',
-  'Goal Driven',
-  'Innovation',
+  'Analytical Thinking',
   'Collaborative Relationships',
+  'Critical Thinking',
+  'Financial Literacy',
+  'Goal-Driven',
+  'Innovative Thinking',
   'Self-Management'
 ] as const;
 
