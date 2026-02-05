@@ -189,36 +189,40 @@ export async function synthesizePrompt(
       };
     }
 
-    const synthesisProp = `You are a world-class prompt engineer specializing in vibe-coding briefs for Google AI Studio.
+    const synthesisProp = `You are assembling a vibe-coding prompt for Google AI Studio. A teenager wrote the inputs below. Your job is to ORGANISE their words into a clean prompt — NOT to rewrite, embellish, or add ideas they didn't mention.
+
+RULES:
+- Use the student's OWN words and phrasing as much as possible. They should recognise their ideas when they read the output.
+- You may lightly tidy grammar or remove filler words, but NEVER change the meaning or add new concepts.
+- Do NOT invent features, audiences, or goals the student didn't mention.
+- Keep the tone casual and teen-friendly — don't make it sound corporate or overly polished.
 
 ${POWER_SKILLS_CONTEXT}
 
-The user is building a Power Skills app called "${appName}":
-- WHY (Purpose): "${why}"
-- WHO (Target Users): "${who}"
-- WHAT (Core Function): "${what}"
-- HOW (Experience): "${how}"
+Here is what the student wrote:
 
-They've also selected these implementation details:
+APP NAME: "${appName}"
+WHY (Purpose): "${why}"
+WHO (Target Users): "${who}"
+WHAT (Core Function): "${what}"
+HOW (Experience): "${how}"
+
+They also picked these implementation details:
 Visual Design: ${designItems.length > 0 ? designItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 Functionality: ${functionalityItems.length > 0 ? functionalityItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 User Experience: ${userItems.length > 0 ? userItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
 
-Create an excellent, specific vibe-coding prompt that:
-1. MUST include the full Power Skills context (all 9 skills with descriptions) at the start so the AI knows what Power Skills are
-2. Opens with the app name and purpose
-3. Defines who it's for
-4. Describes what it does and how it works
-5. Lists visual design requirements (VISUAL VIBE section)
-6. Lists functionality requirements (HOW IT WORKS section)
-7. Lists user experience requirements (USER FEELINGS section)
-8. Ends with instructions to build with React and Tailwind CSS
+Assemble this into a prompt with these sections in order:
+1. The Power Skills context (all 8 skills with descriptions) so the AI knows what Power Skills are
+2. App name and why it exists (use the student's words)
+3. Who it's for (use the student's words)
+4. What it does and how it works (use the student's words)
+5. VISUAL VIBE — list the design items they picked
+6. HOW IT WORKS — list the functionality items they picked
+7. USER FEELINGS — list the user experience items they picked
+8. End with: "Build this using React and Tailwind CSS."
 
-CRITICAL: The Power Skills list MUST be included in the output prompt so that Google AI Studio knows these specific skills.
-
-The prompt should be detailed, specific, and immediately actionable for a vibe-coding session.
-
-Output ONLY the prompt text, ready to copy and paste into Google AI Studio. Do not include explanations or markdown code blocks.`;
+Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markdown code blocks.`;
 
     const response = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
