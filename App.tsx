@@ -301,7 +301,7 @@ const App: React.FC = () => {
                 >
                   {/* Progress Visual */}
                   <div className="lg:col-span-4 flex justify-center order-2 lg:order-1">
-                    <div className="sticky top-8">
+                    <div className="sticky top-8 w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white/60">
                       <ProgressVisual
                         whyLocked={state.stages.why.locked}
                         whoLocked={state.stages.who.locked}
