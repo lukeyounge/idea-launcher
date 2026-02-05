@@ -3,8 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StageData } from '../types';
 import { STAGE_STARTERS, STAGE_FEEDBACK } from '../constants';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, MessageCircle, Loader2 } from 'lucide-react';
-import { validateStageContent } from '../services/geminiService';
+import { CheckCircle2, Lock, MessageCircle, Loader2, Sparkles, X } from 'lucide-react';
+import { getSuggestions } from '../services/geminiService';
 
 interface StageBoxProps {
   data: StageData;
@@ -24,14 +24,12 @@ export const StageBox: React.FC<StageBoxProps> = ({
   const [currentPromptIndex, setCurrentPromptIndex] = useState(0);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [feedbackKey, setFeedbackKey] = useState(0);
-  const [isValidating, setIsValidating] = useState(false);
-  const [isValid, setIsValid] = useState(false);
-  const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const validationTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const starter = STAGE_STARTERS[data.id] || '';
 
-  // Minimum character threshold before validation kicks in
+  // Minimum character threshold before suggestion button is available
   const MIN_CHAR_COUNT = 30;
 
   // Update prompt index based on text length
@@ -41,43 +39,22 @@ export const StageBox: React.FC<StageBoxProps> = ({
     else setCurrentPromptIndex(0);
   }, [data.text]);
 
-  // Debounced validation as user types
-  useEffect(() => {
-    // Clear any pending validation
-    if (validationTimeoutRef.current) {
-      clearTimeout(validationTimeoutRef.current);
+  const handleGetSuggestions = async () => {
+    setIsLoadingSuggestions(true);
+    try {
+      const result = await getSuggestions(data.id, data.text);
+      setSuggestions(result.suggestions);
+    } catch (error) {
+      console.error('Failed to get suggestions:', error);
+      setSuggestions(['Unable to get suggestions. Please try again.']);
+    } finally {
+      setIsLoadingSuggestions(false);
     }
+  };
 
-    // Don't validate if text is too short
-    if (data.text.length < MIN_CHAR_COUNT) {
-      setIsValid(false);
-      setValidationMessage(null);
-      setIsValidating(false);
-      return;
-    }
-
-    // Start validation after debounce period
-    setIsValidating(true);
-    validationTimeoutRef.current = setTimeout(async () => {
-      try {
-        const result = await validateStageContent(data.id, data.text);
-        setIsValid(result.isValid);
-        setValidationMessage(result.feedbackMessage);
-      } catch (error) {
-        console.error('Validation failed:', error);
-        setIsValid(false);
-        setValidationMessage('Check your response');
-      } finally {
-        setIsValidating(false);
-      }
-    }, 500); // 500ms debounce
-
-    return () => {
-      if (validationTimeoutRef.current) {
-        clearTimeout(validationTimeoutRef.current);
-      }
-    };
-  }, [data.text, data.id]);
+  const closeSuggestions = () => {
+    setSuggestions([]);
+  };
 
   const handleFocus = () => {
     if (data.text === '') {
@@ -205,29 +182,13 @@ export const StageBox: React.FC<StageBoxProps> = ({
                       <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         {Math.max(0, MIN_CHAR_COUNT - data.text.length)} more characters
                       </span>
-                    ) : isValidating ? (
-                      <div className="flex items-center gap-2">
-                        <Loader2 size={14} className="text-rose-500 animate-spin" />
-                        <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                          Checking...
-                        </span>
-                      </div>
-                    ) : isValid ? (
-                      <div className="flex items-center gap-2">
-                        <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                        <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">
-                          Ready to lock
-                        </span>
-                      </div>
                     ) : (
-                      <div className="flex flex-col gap-1">
-                        <span className="text-[10px] font-black text-amber-600 uppercase tracking-widest">
-                          {validationMessage || 'Add more detail...'}
-                        </span>
-                      </div>
+                      <span className="text-[10px] font-black text-slate-500 uppercase tracking-widest">
+                        Keep refining or get suggestions
+                      </span>
                     )}
                   </div>
-                  {isValid && !data.locked && (
+                  {data.text.length >= MIN_CHAR_COUNT && !data.locked && (
                     <motion.button
                       initial={{ scale: 0.9, opacity: 0, y: 10 }}
                       animate={{ scale: 1, opacity: 1, y: 0 }}
@@ -235,14 +196,74 @@ export const StageBox: React.FC<StageBoxProps> = ({
                       whileTap={{ scale: 0.95 }}
                       onClick={(e) => {
                         e.stopPropagation();
-                        onReadyToLock();
+                        handleGetSuggestions();
                       }}
-                      className="glow-button flex items-center gap-3 bg-rose-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_15px_30px_-5px_rgba(225,29,72,0.4)] transition-all"
+                      disabled={isLoadingSuggestions}
+                      className="flex items-center gap-3 bg-rose-600 hover:bg-rose-700 disabled:bg-rose-400 text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_15px_30px_-5px_rgba(225,29,72,0.4)] transition-all"
                     >
-                      Lock it in <Lock size={16} strokeWidth={3} />
+                      {isLoadingSuggestions ? (
+                        <>
+                          <Loader2 size={16} strokeWidth={3} className="animate-spin" />
+                          Thinking...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles size={16} strokeWidth={3} />
+                          Suggestions
+                        </>
+                      )}
                     </motion.button>
                   )}
                 </div>
+
+                <AnimatePresence>
+                  {suggestions.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -12 }}
+                      className="bg-rose-50 border border-rose-200 rounded-2xl p-6 space-y-3"
+                    >
+                      <div className="flex justify-between items-start">
+                        <h4 className="text-sm font-black text-rose-700 uppercase tracking-wide">
+                          Suggestions from Gemini
+                        </h4>
+                        <button
+                          onClick={closeSuggestions}
+                          className="text-rose-400 hover:text-rose-600 transition-colors"
+                        >
+                          <X size={18} strokeWidth={3} />
+                        </button>
+                      </div>
+                      <ul className="space-y-2">
+                        {suggestions.map((suggestion, index) => (
+                          <li key={index} className="flex gap-3">
+                            <span className="text-rose-500 font-bold shrink-0 text-sm">
+                              {index + 1}.
+                            </span>
+                            <span className="text-slate-700 text-sm leading-relaxed">
+                              {suggestion}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <motion.button
+                  initial={{ scale: 0.9, opacity: 0, y: 10 }}
+                  animate={{ scale: 1, opacity: 1, y: 0 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onReadyToLock();
+                  }}
+                  className="glow-button w-full flex items-center justify-center gap-3 bg-rose-600 text-white px-8 py-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-[0_15px_30px_-5px_rgba(225,29,72,0.4)] transition-all"
+                >
+                  Lock it in <Lock size={16} strokeWidth={3} />
+                </motion.button>
               </motion.div>
             ) : !data.locked && (
               <div className="text-slate-400 text-base font-medium line-clamp-1 italic px-2 opacity-60">
