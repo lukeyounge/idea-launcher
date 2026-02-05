@@ -61,7 +61,8 @@ const App: React.FC = () => {
   const [customInput, setCustomInput] = useState<Record<string, string>>({
     design: '',
     functionality: '',
-    users: ''
+    users: '',
+    screens: ''
   });
   const [synthesizedPrompt, setSynthesizedPrompt] = useState<string | null>(null);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
