@@ -24,7 +24,7 @@ export const POWER_SKILLS_APPS: PowerSkillsApp[] = [
   {
     id: 'scenarios',
     name: 'Power Skills Scenarios',
-    description: 'A choose-your-own-adventure app where you face real-life situations and discover which Power Skills you use',
+    description: 'An interactive app that puts you in real-life situations, lets you choose how to respond, and shows which Power Skills you\'re using',
     icon: '📖'
   }
 ];

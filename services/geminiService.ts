@@ -60,13 +60,22 @@ Format exactly: "1. [your tip]"`,
 They're explaining WHAT their app does. Here's what they wrote:
 "[USER_TEXT]"
 
-Give ONE friendly tip (max 25 words) to help them describe it more clearly.
+Give ONE friendly tip (max 25 words) to help them describe the APP'S FEATURES and FUNCTIONALITY more clearly.
 
-IMPORTANT: Write like you're chatting with a teen - casual, encouraging, no jargon. Use "you" and "your".
+IMPORTANT:
+- Focus ONLY on what the app DOES, not who uses it (that's already covered)
+- Ask about features, main actions, or how it works
+- Write like you're chatting with a teen - casual, encouraging, no jargon. Use "you" and "your".
 
 Example good responses:
 - "Sounds cool! When someone opens your app, what's the first thing they see?"
-- "Love the idea! What's the ONE main thing users actually do in your app?"
+- "Nice! What's the ONE main thing users actually do in your app?"
+- "Love it! Does it track progress, give tips, or something else?"
+
+Example BAD responses to avoid:
+- Don't ask about the audience/who uses it (that's for WHO stage)
+- Don't ask why it matters (that's for WHY stage)
+- Don't ask how it feels (that's for HOW stage)
 
 Format exactly: "1. [your tip]"`,
 
