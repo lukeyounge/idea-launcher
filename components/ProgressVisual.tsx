@@ -224,7 +224,7 @@ export const ProgressVisual: React.FC<ProgressVisualProps> = ({
         transition={{ delay: 0.3 }}
       >
         <h3 className="text-2xl font-black text-slate-800 mb-2">
-          {allLocked ? 'Your idea is ready!' : 'Building Your Idea'}
+          {allLocked ? "Let's add some more detail" : 'Building Your Idea'}
         </h3>
         <p className="text-slate-500 font-semibold">
           {allLocked
