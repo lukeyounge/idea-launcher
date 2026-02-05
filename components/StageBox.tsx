@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { StageData } from '../types';
 import { STAGE_STARTERS, STAGE_FEEDBACK, STAGE_GUIDANCE } from '../constants';
 import { motion, AnimatePresence } from 'framer-motion';
-import { CheckCircle2, Lock, Loader2, Sparkles, X, Plus, Lightbulb } from 'lucide-react';
+import { CheckCircle2, Lock, Loader2, Sparkles, X, Lightbulb } from 'lucide-react';
 import { getSuggestions } from '../services/geminiService';
 
 interface StageBoxProps {
@@ -74,13 +74,6 @@ export const StageBox: React.FC<StageBoxProps> = ({
     } finally {
       setIsLoadingSuggestions(false);
     }
-  };
-
-  const appendSuggestion = (suggestion: string) => {
-    const newText = data.text.trim() + '\n\n' + suggestion;
-    onUpdate(newText);
-    // Remove the suggestion from the list
-    setSuggestions(prev => prev.filter(s => s !== suggestion));
   };
 
   const dismissSuggestion = (index: number) => {
@@ -309,22 +302,13 @@ export const StageBox: React.FC<StageBoxProps> = ({
                             <span className="text-slate-700 text-sm leading-relaxed flex-1">
                               {suggestion}
                             </span>
-                            <div className="flex gap-2 shrink-0">
-                              <button
-                                onClick={() => appendSuggestion(suggestion)}
-                                className="bg-rose-500 hover:bg-rose-600 text-white p-2 rounded-lg transition-colors"
-                                title="Add to your answer"
-                              >
-                                <Plus size={16} strokeWidth={3} />
-                              </button>
-                              <button
-                                onClick={() => dismissSuggestion(index)}
-                                className="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-lg transition-colors"
-                                title="Dismiss"
-                              >
-                                <X size={16} strokeWidth={3} />
-                              </button>
-                            </div>
+                            <button
+                              onClick={() => dismissSuggestion(index)}
+                              className="bg-slate-100 hover:bg-slate-200 text-slate-500 p-2 rounded-lg transition-colors shrink-0"
+                              title="Dismiss"
+                            >
+                              <X size={16} strokeWidth={3} />
+                            </button>
                           </div>
                         ))}
                       </div>
