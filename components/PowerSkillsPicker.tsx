@@ -139,38 +139,33 @@ export const PowerSkillsPicker: React.FC<PowerSkillsPickerProps> = ({ onSelect }
           ))}
         </div>
 
-        {/* Build your own option */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-          className="text-center"
-        >
-          <div className="inline-block">
-            <p className="text-slate-500 text-sm mb-4">
-              Or if you have your own idea...
-            </p>
-            <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowOwnIdeaInput(true)}
-              className="inline-flex items-center gap-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white px-8 py-4 rounded-2xl font-black text-sm uppercase tracking-wider shadow-lg shadow-amber-500/30 transition-all"
-            >
-              <Lightbulb size={20} strokeWidth={2.5} />
-              Build your own idea
-            </motion.button>
-          </div>
-        </motion.div>
-
         {/* Footer instruction */}
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="text-center text-slate-600 text-sm mt-12"
+          transition={{ delay: 0.6 }}
+          className="text-center text-slate-400 text-base font-semibold mt-12 mb-8"
         >
           Choose one, or build your own idea based on the SBF Power Skills
         </motion.p>
+
+        {/* Build your own option */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.7 }}
+          className="text-center"
+        >
+          <motion.button
+            whileHover={{ scale: 1.03, y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={() => setShowOwnIdeaInput(true)}
+            className="inline-flex items-center gap-2 bg-slate-600 hover:bg-slate-500 text-white px-6 py-3 rounded-xl font-semibold text-xs uppercase tracking-wide transition-all"
+          >
+            <Lightbulb size={16} strokeWidth={2.5} />
+            Build your own idea
+          </motion.button>
+        </motion.div>
       </div>
 
       {/* Own idea modal */}
