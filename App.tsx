@@ -297,10 +297,23 @@ const App: React.FC = () => {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
-                  className="relative"
+                  className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start"
                 >
-                  {/* Stage Boxes - Full width container */}
-                  <div className="space-y-4">
+                  {/* Progress Visual */}
+                  <div className="lg:col-span-4 flex justify-center order-2 lg:order-1">
+                    <div className="sticky top-8 w-full bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white/60">
+                      <ProgressVisual
+                        whyLocked={state.stages.why.locked}
+                        whoLocked={state.stages.who.locked}
+                        whatLocked={state.stages.what.locked}
+                        howLocked={state.stages.how.locked}
+                        onContinue={() => setView('details')}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Stage Boxes */}
+                  <div className="lg:col-span-8 order-1 lg:order-2 space-y-4">
                     <StageBox
                       data={state.stages.why}
                       isActive={activeStageId === 'why'}
@@ -315,20 +328,6 @@ const App: React.FC = () => {
                       onUpdate={(val) => updateStageText('who', val)}
                       onReadyToLock={() => lockStage('who')}
                     />
-
-                    {/* Progress Visual - Centered between stage boxes */}
-                    <div className="flex justify-center py-8">
-                      <div className="w-full max-w-sm bg-white/70 backdrop-blur-md rounded-[2.5rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.08)] border border-white/60">
-                        <ProgressVisual
-                          whyLocked={state.stages.why.locked}
-                          whoLocked={state.stages.who.locked}
-                          whatLocked={state.stages.what.locked}
-                          howLocked={state.stages.how.locked}
-                          onContinue={() => setView('details')}
-                        />
-                      </div>
-                    </div>
-
                     <StageBox
                       data={state.stages.what}
                       isActive={activeStageId === 'what'}
