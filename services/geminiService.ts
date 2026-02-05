@@ -49,12 +49,13 @@ export async function validateStageContent(
   text: string
 ): Promise<ValidationResponse> {
   try {
-    const apiKey = (import.meta as any).env.VITE_GEMINI_API_KEY;
+    const apiKey = (process.env as any).GEMINI_API_KEY;
     if (!apiKey) {
       console.error('Gemini API key not configured');
+      // Fallback: allow locking with reasonable content (80+ chars for meaningful thinking)
       return {
-        isValid: text.length >= 30,
-        feedbackMessage: 'Content validation unavailable',
+        isValid: text.length >= 80,
+        feedbackMessage: text.length >= 80 ? 'Ready to lock' : 'Keep writing...',
         confidence: 0,
       };
     }
@@ -90,8 +91,8 @@ export async function validateStageContent(
     if (!response.ok) {
       console.error('Gemini API error:', response.statusText);
       return {
-        isValid: text.length >= 30,
-        feedbackMessage: 'Checking your response...',
+        isValid: text.length >= 80,
+        feedbackMessage: text.length >= 80 ? 'Ready to lock' : 'Keep writing...',
         confidence: 0,
       };
     }
@@ -105,8 +106,8 @@ export async function validateStageContent(
     if (!jsonMatch) {
       console.error('Could not parse Gemini response:', content);
       return {
-        isValid: text.length >= 30,
-        feedbackMessage: 'Checking your response...',
+        isValid: text.length >= 80,
+        feedbackMessage: text.length >= 80 ? 'Ready to lock' : 'Keep writing...',
         confidence: 0,
       };
     }
@@ -122,8 +123,8 @@ export async function validateStageContent(
     console.error('Validation error:', error);
     // Fallback to character count if API fails
     return {
-      isValid: text.length >= 30,
-      feedbackMessage: 'Reviewing your response...',
+      isValid: text.length >= 80,
+      feedbackMessage: text.length >= 80 ? 'Ready to lock' : 'Keep writing...',
       confidence: 0,
     };
   }
