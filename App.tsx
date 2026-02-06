@@ -546,15 +546,26 @@ const App: React.FC = () => {
                       >
                         <ArrowLeft size={18} /> Back
                       </motion.button>
-                      {synthesizedPrompt && (
+                      {synthesizedPrompt && !promptFeedback && (
                         <motion.button
-                          whileHover={{ scale: 1.03 }}
-                          whileTap={{ scale: 0.97 }}
-                          onClick={handleResynthesis}
-                          disabled={isSynthesizing}
-                          className="bg-slate-100 text-slate-600 px-10 py-5 rounded-2xl font-black flex items-center justify-center gap-3 uppercase tracking-widest text-xs hover:bg-slate-200 transition-all border border-slate-200 disabled:opacity-50"
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={handleGetFeedback}
+                          disabled={isLoadingFeedback}
+                          className="bg-gradient-to-r from-amber-400 to-amber-500 text-amber-900 px-10 py-5 rounded-2xl font-black flex items-center justify-center gap-3 uppercase tracking-widest text-xs hover:from-amber-500 hover:to-amber-600 transition-all border border-amber-300 shadow-[0_12px_30px_rgba(217,119,6,0.2)] disabled:opacity-50"
                         >
-                          <Sparkles size={16} /> Regenerate
+                          {isLoadingFeedback ? (
+                            <>
+                              <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+                                <Loader2 size={16} />
+                              </motion.div>
+                              Loading...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles size={16} /> Get AI Feedback
+                            </>
+                          )}
                         </motion.button>
                       )}
                       <motion.button
@@ -574,27 +585,6 @@ const App: React.FC = () => {
                     <p className="text-center text-slate-500 text-sm font-semibold max-w-md">
                       Paste this prompt into Google AI Studio to start building your Power Skills app!
                     </p>
-
-                    {synthesizedPrompt && !promptFeedback && (
-                      <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={handleGetFeedback}
-                        disabled={isLoadingFeedback}
-                        className="text-slate-600 hover:text-rose-600 text-sm font-semibold transition-colors mt-4"
-                      >
-                        {isLoadingFeedback ? (
-                          <span className="flex items-center gap-2">
-                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
-                              <Loader2 size={16} />
-                            </motion.div>
-                            Getting AI feedback...
-                          </span>
-                        ) : (
-                          "Want AI to suggest a quick enhancement? ✨"
-                        )}
-                      </motion.button>
-                    )}
                   </div>
                 </div>
 
