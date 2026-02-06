@@ -7,7 +7,7 @@ import { StageBox } from './components/StageBox';
 import { InstructionChip } from './components/InstructionChip';
 import { PowerSkillsPicker } from './components/PowerSkillsPicker';
 import { ProgressVisual } from './components/ProgressVisual';
-import { synthesizePrompt } from './services/geminiService';
+import { synthesizePrompt, getPromptFeedback } from './services/geminiService';
 import {
   RefreshCcw,
   Layout,
@@ -67,6 +67,8 @@ const App: React.FC = () => {
   const [synthesizedPrompt, setSynthesizedPrompt] = useState<string | null>(null);
   const [isSynthesizing, setIsSynthesizing] = useState(false);
   const [customIdeaText, setCustomIdeaText] = useState<string>('');
+  const [promptFeedback, setPromptFeedback] = useState<string[] | null>(null);
+  const [isLoadingFeedback, setIsLoadingFeedback] = useState(false);
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
@@ -175,10 +177,12 @@ const App: React.FC = () => {
     });
     setView('picker');
     setActiveStageId(null);
-    setCustomInput({ design: '', functionality: '', users: '' });
+    setCustomInput({ design: '', functionality: '', users: '', screens: '' });
     setSynthesizedPrompt(null);
     setIsSynthesizing(false);
     setCustomIdeaText('');
+    setPromptFeedback(null);
+    setIsLoadingFeedback(false);
   };
 
   const handleAppSelect = (app: PowerSkillsApp | null, customIdea?: string) => {
@@ -204,6 +208,14 @@ const App: React.FC = () => {
     navigator.clipboard.writeText(generatePromptText());
     setShowCopySuccess(true);
     setTimeout(() => setShowCopySuccess(false), 3000);
+  };
+
+  const handleGetFeedback = async () => {
+    if (!synthesizedPrompt) return;
+    setIsLoadingFeedback(true);
+    const result = await getPromptFeedback(synthesizedPrompt);
+    setPromptFeedback(result.feedback);
+    setIsLoadingFeedback(false);
   };
 
   const handleResynthesis = async () => {
@@ -562,8 +574,56 @@ const App: React.FC = () => {
                     <p className="text-center text-slate-500 text-sm font-semibold max-w-md">
                       Paste this prompt into Google AI Studio to start building your Power Skills app!
                     </p>
+
+                    {synthesizedPrompt && !promptFeedback && (
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={handleGetFeedback}
+                        disabled={isLoadingFeedback}
+                        className="text-slate-600 hover:text-rose-600 text-sm font-semibold transition-colors mt-4"
+                      >
+                        {isLoadingFeedback ? (
+                          <span className="flex items-center gap-2">
+                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
+                              <Loader2 size={16} />
+                            </motion.div>
+                            Getting AI feedback...
+                          </span>
+                        ) : (
+                          "Want AI to suggest a quick enhancement? ✨"
+                        )}
+                      </motion.button>
+                    )}
                   </div>
                 </div>
+
+                {promptFeedback && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-[2.5rem] p-8 border-2 border-amber-200 shadow-[0_20px_60px_rgba(217,119,6,0.1)]"
+                  >
+                    <div className="flex items-start gap-4">
+                      <div className="p-3 bg-amber-100 rounded-2xl flex-shrink-0">
+                        <Sparkles className="text-amber-600" size={24} strokeWidth={2.5} />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="text-lg font-black text-amber-900 mb-3">AI's Thoughts</h4>
+                        <div className="space-y-3">
+                          {promptFeedback.map((point: string, idx: number) => (
+                            <p key={idx} className="text-amber-900 font-medium text-sm leading-relaxed">
+                              {point}
+                            </p>
+                          ))}
+                        </div>
+                        <p className="text-amber-800 text-xs font-semibold mt-4 italic">
+                          You've built a solid foundation — trust your instincts on whether to adjust based on this feedback!
+                        </p>
+                      </div>
+                    </div>
+                  </motion.div>
+                )}
               </motion.div>
             )}
           </AnimatePresence>

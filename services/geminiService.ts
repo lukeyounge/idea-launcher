@@ -264,3 +264,99 @@ ${powerSkillsWithDescriptions}
 
 The app should reference these specific Power Skills where relevant.`;
 }
+
+interface FeedbackResponse {
+  feedback: string[];
+}
+
+export async function getPromptFeedback(
+  prompt: string
+): Promise<FeedbackResponse> {
+  try {
+    const apiKey = (process.env as any).GEMINI_API_KEY;
+    if (!apiKey) {
+      console.error('Gemini API key not configured');
+      return {
+        feedback: ['This is a great start! When you paste this into Google AI Studio, you\'ll have everything you need to build your app.'],
+      };
+    }
+
+    const feedbackPrompt = `You're reviewing a teenager's app idea prompt for Google AI Studio. They've already written out their WHY, WHO, WHAT, HOW, and picked design choices. Your job is to give them 1-2 specific, encouraging suggestions to make their prompt even stronger.
+
+Here's their prompt:
+
+${prompt}
+
+Give 1-2 SHORT, actionable suggestions (max 2 sentences each). Format like this:
+1. [Suggestion 1]
+2. [Suggestion 2]
+
+If you only have 1 good suggestion, just give 1. Keep it encouraging and specific — don't overwhelm them.`;
+
+    const response = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
+        apiKey,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: feedbackPrompt,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.7,
+            maxOutputTokens: 500,
+          },
+        }),
+      }
+    );
+
+    if (!response.ok) {
+      console.error('Gemini feedback API error:', response.statusText);
+      return {
+        feedback: ['This is a great start! When you paste this into Google AI Studio, you\'ll have everything you need to build your app.'],
+      };
+    }
+
+    const data = await response.json();
+    const content = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+
+    if (!content) {
+      return {
+        feedback: ['This is a great start! When you paste this into Google AI Studio, you\'ll have everything you need to build your app.'],
+      };
+    }
+
+    // Parse numbered suggestions
+    const lines = content.split('\n');
+    const feedback = lines
+      .map((line: string) => line.trim())
+      .filter((line: string) => line.length > 0)
+      .filter((line: string) => line.match(/^\d+\./))
+      .map((line: string) => line.replace(/^\d+\.\s*/, '').trim());
+
+    // If no numbered suggestions found, return the content as is
+    if (feedback.length === 0) {
+      return {
+        feedback: [content],
+      };
+    }
+
+    return {
+      feedback,
+    };
+  } catch (error) {
+    console.error('Prompt feedback error:', error);
+    return {
+      feedback: ['This is a great start! When you paste this into Google AI Studio, you\'ll have everything you need to build your app.'],
+    };
+  }
+}
