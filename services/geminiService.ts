@@ -190,103 +190,10 @@ export async function synthesizePrompt(
   userItems: string[],
   screenItems: string[]
 ): Promise<PromptSynthesisResponse> {
-  try {
-    const apiKey = (process.env as any).GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error('Gemini API key not configured');
-      return {
-        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
-      };
-    }
-
-    const synthesisProp = `You are assembling a vibe-coding prompt for Google AI Studio. A teenager wrote the inputs below. Your job is to ORGANISE their words into a clean prompt — NOT to rewrite, embellish, or add ideas they didn't mention.
-
-RULES:
-- Use the student's OWN words and phrasing as much as possible. They should recognise their ideas when they read the output.
-- You may lightly tidy grammar or remove filler words, but NEVER change the meaning or add new concepts.
-- Do NOT invent features, audiences, or goals the student didn't mention.
-- Keep the tone casual and teen-friendly — don't make it sound corporate or overly polished.
-
-Here is what the student wrote:
-
-APP NAME: "${appName}"
-WHY (Purpose): "${why}"
-WHO (Target Users): "${who}"
-WHAT (Core Function): "${what}"
-HOW (Experience): "${how}"
-
-They also picked these implementation details:
-Visual Design: ${designItems.length > 0 ? designItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
-Functionality: ${functionalityItems.length > 0 ? functionalityItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
-User Experience: ${userItems.length > 0 ? userItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
-App Screens: ${screenItems.length > 0 ? screenItems.map(item => `"${item}"`).join(', ') : 'Not specified'}
-
-Assemble this into a prompt with these sections in order:
-1. App name and why it exists (use the student's words)
-2. Who it's for (use the student's words)
-3. What it does and how it works (use the student's words)
-4. VISUAL VIBE — list the design items they picked
-5. HOW IT WORKS — list the functionality items they picked
-6. USER FEELINGS — list the user experience items they picked
-7. APP SCREENS — list the screens/pages they picked
-8. End with: "Build this using React and Tailwind CSS."
-9. Finally, add The Power Skills context (all 8 skills with descriptions) so the AI knows what Power Skills are
-
-Output ONLY the assembled prompt, ready to copy-paste. No explanations, no markdown code blocks.`;
-
-    const synthesisPropWithContext = synthesisProp + `\n\nHere is the Power Skills context to add at the very end:\n\n${POWER_SKILLS_CONTEXT}`;
-
-    const response = await fetch(
-      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
-        apiKey,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: synthesisPropWithContext,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 3000,
-          },
-        }),
-      }
-    );
-
-    if (!response.ok) {
-      console.error('Gemini synthesis API error:', response.statusText);
-      return {
-        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
-      };
-    }
-
-    const data = await response.json();
-    const synthesized = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-
-    if (!synthesized) {
-      return {
-        prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
-      };
-    }
-
-    return {
-      prompt: synthesized.trim(),
-    };
-  } catch (error) {
-    console.error('Prompt synthesis error:', error);
-    return {
-      prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
-    };
-  }
+  // Skip API call and use fallback directly for instant, consistent results
+  return {
+    prompt: generateFallbackPrompt(appName, why, who, what, how, designItems, functionalityItems, userItems, screenItems),
+  };
 }
 
 function generateFallbackPrompt(
