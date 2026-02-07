@@ -281,17 +281,28 @@ export async function getPromptFeedback(
       };
     }
 
-    const feedbackPrompt = `You're reviewing a teenager's app idea prompt for Google AI Studio. They've already written out their WHY, WHO, WHAT, HOW, and picked design choices. Your job is to give them 1-2 specific, encouraging suggestions to make their prompt even stronger.
+    const feedbackPrompt = `You're a supportive teacher reviewing a teenager's app idea. They've written their WHY, WHO, WHAT, HOW, and picked design choices. Your job is to give them 1-2 specific, practical suggestions that would make their app work better for their users.
+
+BE WARM AND ENCOURAGING. Write like you're talking to a student you believe in. Use simple, friendly language. Avoid technical jargon. Make suggestions concrete and related to THEIR specific app idea, not generic advice.
 
 Here's their prompt:
 
 ${prompt}
 
-Give 1-2 SHORT, actionable suggestions (max 2 sentences each). Format like this:
+Give 1-2 SHORT suggestions (max 2 sentences each). Format like this:
 1. [Suggestion 1]
 2. [Suggestion 2]
 
-If you only have 1 good suggestion, just give 1. Keep it encouraging and specific — don't overwhelm them.`;
+If you only have 1 good suggestion, just give 1.
+
+TONE GUIDE:
+- Sound like a teacher who cares: "Have you thought about..." or "One thing that might help..."
+- Be practical: focus on what they can actually do or think about
+- Stay positive: highlight what they're doing well, then gently suggest improvements
+- Avoid words like: "edge cases", "robust", "optimize", "leverage", "customize", "elevate", "implementation"
+- Use simple words like: "think about", "try", "consider", "help", "make sure", "remember"
+
+Keep it warm, human, and focused on THEIR app.`;
 
     const response = await fetch(
       'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' +
