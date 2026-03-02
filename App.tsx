@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { ThinkshowTracker } from '@thinkshow/scorm-sdk';
 import { StageId, AppState, Instruction, PowerSkillsApp } from './types';
 import { STAGE_CONFIG, DEFAULT_INSTRUCTIONS } from './constants';
 import { StageBox } from './components/StageBox';
@@ -25,10 +26,13 @@ import {
   Layers
 } from 'lucide-react';
 
+const tracker = ThinkshowTracker.init();
 const LOCAL_STORAGE_KEY = 'idea-launcher-power-skills-v1';
 
 const App: React.FC = () => {
   const [state, setState] = useState<AppState>(() => {
+    const scormState = tracker.loadState<AppState>();
+    if (scormState) return scormState;
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     if (saved) {
       try {
@@ -72,6 +76,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(state));
+    tracker.saveState(state);
   }, [state]);
 
   // Scroll to top when view changes
@@ -82,6 +87,7 @@ const App: React.FC = () => {
   // Synthesize prompt when entering final_review
   useEffect(() => {
     if (view === 'final_review' && !synthesizedPrompt && !isSynthesizing) {
+      tracker.setProgress(80);
       const triggerSynthesis = async () => {
         setIsSynthesizing(true);
         const approved = state.instructions.filter(i => i.isApproved);
@@ -103,6 +109,17 @@ const App: React.FC = () => {
         );
         setSynthesizedPrompt(result.prompt);
         setIsSynthesizing(false);
+        tracker.setProgress(90);
+        tracker.submitArtifact({
+          type: 'text',
+          content: result.prompt,
+          metadata: { appName: state.appName, stageTexts: {
+            why: state.stages.why.text,
+            who: state.stages.who.text,
+            what: state.stages.what.text,
+            how: state.stages.how.text
+          }}
+        });
       };
 
       triggerSynthesis();
@@ -117,10 +134,15 @@ const App: React.FC = () => {
   };
 
   const lockStage = (id: StageId) => {
-    setState(prev => ({
-      ...prev,
-      stages: { ...prev.stages, [id]: { ...prev.stages[id], locked: true } }
-    }));
+    setState(prev => {
+      const next = {
+        ...prev,
+        stages: { ...prev.stages, [id]: { ...prev.stages[id], locked: true } }
+      };
+      const lockedCount = Object.values(next.stages).filter(s => s.locked).length;
+      tracker.setProgress(lockedCount * 15);
+      return next;
+    });
     setActiveStageId(null);
   };
 
@@ -207,6 +229,8 @@ const App: React.FC = () => {
   const handleCopyPrompt = () => {
     navigator.clipboard.writeText(generatePromptText());
     setShowCopySuccess(true);
+    tracker.setProgress(100);
+    tracker.complete();
     setTimeout(() => setShowCopySuccess(false), 3000);
   };
 
@@ -319,7 +343,7 @@ const App: React.FC = () => {
                         whoLocked={state.stages.who.locked}
                         whatLocked={state.stages.what.locked}
                         howLocked={state.stages.how.locked}
-                        onContinue={() => setView('details')}
+                        onContinue={() => { tracker.setProgress(70); setView('details'); }}
                       />
                     </div>
                   </div>

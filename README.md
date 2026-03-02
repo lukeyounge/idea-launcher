@@ -18,3 +18,14 @@ View your app in AI Studio: https://ai.studio/apps/drive/1Ylc2mJsUI0tkoLni1rCyep
 2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
 3. Run the app:
    `npm run dev`
+
+## Build SCORM Package
+
+To create a SCORM 1.2 zip for uploading to an LMS:
+
+```bash
+npm run build
+npx @thinkshow/scorm-sdk pack --title "Idea Launcher"
+```
+
+This outputs `idea-launcher.zip` in the project root.
